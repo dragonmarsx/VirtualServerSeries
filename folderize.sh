@@ -14,10 +14,9 @@ fi
 mkdir $MY_DATAFOLDER
 if [ -d "$MY_DATAFOLDER" ];
 then
-  mkdir $MY_DATAFOLDER/AppData
-  mkdir $MY_DATAFOLDER/Documents
-  mkdir $MY_DATAFOLDER/Downloads
+  mkdir $MY_DATAFOLDER/Config
   mkdir $MY_DATAFOLDER/Gallery
+  mkdir $MY_DATAFOLDER/Gallery/PhotoAlbum
   mkdir $MY_DATAFOLDER/Media
   mkdir $MY_DATAFOLDER/Media/FamilyVideo
   mkdir $MY_DATAFOLDER/Media/Movie
