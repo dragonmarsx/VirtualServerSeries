@@ -9,3 +9,8 @@ rm xidel_0.9.8-1_amd64.deb
 wget -L -q https://raw.githubusercontent.com/dragonmarsx/VirtualServerSeries/main/richerize.sh
 chmod +x preparize.sh
 chmod +x richerize.sh
+echo
+echo "This scipt reached the end line."
+echo "DONE!"
+echo
+rm preparize.sh
