@@ -1,13 +1,15 @@
 #!/bin/bash
-MAX_POSTERS=3
-MAX_BACKDROPS=4
+MAX_POSTERS=2
+MAX_BACKDROPS=2
 ACTORS=('Sara Hayek' 'Liza Taylor' 'Gina Close' 'Jimmy Chan' 'Lucho DiCaprio' 'Ant Banderas' 'Penelope Reyes')
 ROLES=('the driver' 'the visitor' 'the stunt' 'the clown' 'the firefighter' 'the hero' 'secondary paper' 'the extra' 'ice cream seller' 'the who knows who')
 STUDIOS=('Metro Golden Meyer' 'Univero Latino Studios' 'Paramount Entertainment')
 DIRECTOR=('Dhina Marca' 'Elmer Curio' 'Esteban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
 SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets')
+TRAILER_IDS=('0ABCDEFHRG|0' 'v-PjgYDrg70|1' 'iurbZwxKFUE|2' 'hu9bERy7XGY|3' 'G2gO5Br6r_4|4' 'un7a-i6pTS4|5' '-xjqxtt18Ys|6' 'LAr8SrBkDTI|7' 'vZnBR4SDIEs|8' 'mfw2JSDXUjE|9' 'CxwTLktovTU|10' 'eHcZlPpNt0Q|11')
 ###############
 SUPPORTED_EXT=("mkv" "mp4" "avi")
+VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb)
 YELLOW='\033[1;33m'
 RED='\033[0;33m'
 NC='\033[0m' 
@@ -25,20 +27,27 @@ for f in "$1"/*; do
     old_f=$f; new_f=${f%.*}/$(basename -- "$f")
     let COUNTER++
 done
-if [ $COUNTER -eq 0 ]; then echo -e "${RED}Error:${NC} Missing directory ${YELLOW}$1${NC}.\n"; exit 0; fi
+if [ $COUNTER -eq 0 ]; then echo -e "${RED}Error:${NC} Missing directory or directory has no content ${YELLOW}$1${NC}.\n"; exit 0; fi
+TYPED_ARGUMENTS=${@:2}
+for i in ${TYPED_ARGUMENTS[@]}; do
+  if [[ " ${VALID_ARGUMENTS[*]} " =~ [[:space:]]${i,,}[[:space:]] ]]; then recognized_args+=("${i,,} "); fi
+done
 
 TOTAL_COUNTER=$COUNTER
-echo -e "=========================================================================="
+echo -e "================================================================================"
 echo -e "A total of "${RED}$TOTAL_COUNTER${NC}" file(s) will be moved inside ${YELLOW}$1."
 echo -e "${NC}Each media file(s) will be moved inside its new folder.  Example:"
-echo -e "FROM: "$old_f
-echo -e "  TO: "$new_f
-echo -e "__________________________________________________________________________"
-echo -e "Valid arguments     : -noposter -noback -nologo -nometa -nomusic -backrgb"
-echo -e "__________________________________________________________________________"
+echo -e "${YELLOW}BEFORE${NC}: "$old_f
+echo -e "${YELLOW} AFTER${NC}: "$new_f
+echo -e "________________________________________________________________________________"
+echo -e "Valid arguments: "${VALID_ARGUMENTS[@]}
+if [ ! ${#recognized_args[@]} -eq 0 ]; then echo -e "${YELLOW}Recognized args: "${recognized_args[@]}${NC}; fi
+echo -e "________________________________________________________________________________"
 echo -e "${YELLOW}Press Enter key to continue OR Ctrl/Option +C to abort.${NC}"
 read
 if [[ $(whoami) -ne "root" ]]; then echo -e "Execute with root account privileges: ${YELLOW}su - ${NC}"; exit 0; fi
+
+
 COUNTER=1
 for f in "$1"/*; do
     [ -d "$f" ] && continue; 
@@ -56,7 +65,8 @@ for f in "$1"/*; do
     aroundBegining=( $(shuf -e 1 2 3) ) #random digit for 1 tenth, 1 quart or 1 third of the total length
     ffmpeg_ssMidFrameORIGINAL=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.5")")
     ffmpeg_ssMidFrame=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.${aroundBegining[0]}")")
-    if [[ ! "${@:2}" == *"-noposter"* ]]; then
+    
+    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-noposter"* ]]; then
       echo -e -n "${RED}POSTERS     : ${NC}Creating main image poster..."
       mkdir -p "${f%.*}/_temp" 
       ffmpeg_vfPoster="crop=in_w/2:in_h,select='not(mod(n\,300))',setpts=N/TB"
@@ -78,11 +88,11 @@ for f in "$1"/*; do
       echo -e "${RED}DONE!${NC}"   
 	fi
         
-    if [[ ! "${@:2}*" == *"-noback"* ]]; then
+    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-noback"* ]]; then
       echo -e -n "${RED}BACKDROPS   :${NC} Creating main backdrop image..."
       ffmpeg -ss $(bc -l <<< 'scale=2;'${ffmpeg_ssMidFrame}/2) -i "${ffmpeg_i[@]}" -vf "hue=s=3,scale=2160:-1" -frames:v 1 -loglevel error "${f%.*}/backdrop.jpg" -y 
       echo -e -n "${RED}DONE!${NC}.  Creating additional backdrops..."   
-      if [[ "$*" == *"-backrgb"* ]]
+      if [[ "${TYPED_ARGUMENTS,,}" == *"-rgb"* ]]
       then
         eqR="eq=gamma_r=4:gamma_g=1:gamma_b=0,hue=s=10"; eqG="eq=gamma_r=0.2:gamma_g=1.1:gamma_b=0";
         eqB="eq=gamma_r=0:gamma_g=0.7:gamma_b=10";       eqC="eq=gamma_r=0.2:gamma_g=2:gamma_b=6";
@@ -103,7 +113,7 @@ for f in "$1"/*; do
       echo -e "${RED}DONE!${NC}"
     fi
     
-    if [[ ! "${@:2}" == *"-nologo"* ]]; then
+    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-nologo"* ]]; then
       echo -e -n "${RED}CLEARLOGO   :${NC} Creating optional Clearlogo.png image..."  
       font_color=( $(shuf -e "white" "yellow" "orange" "turquoise" "green") )
       border_color=( $(shuf -e "red" "black" "blue" "magenta") )
@@ -119,7 +129,7 @@ for f in "$1"/*; do
       echo -e "${RED}DONE!${NC}"
     fi
     
-    if [[ ! "${@:2}" == *"-nometa"* ]]; then 
+    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-nometa"* ]]; then 
       echo -e -n "${RED}METAFILE    :${NC} Creating '${base_name[@]}.nfo' --a template XML metadata file..."
       rating=( $(shuf -e 7 8 9 10) )
       decade=( $(shuf -e 1980 1990 2000 2010 2020) ) 
@@ -151,6 +161,7 @@ for f in "$1"/*; do
       director=$(shuf -n 1 -i1-$(expr ${#DIRECTOR[@]}) )
       studio=$(shuf -n 1 -i1-$(expr ${#STUDIOS[@]}) )
       search_tag=$(shuf -n 1 -i1-$(expr ${#SEARCH_TAGS[@]}) )
+      trailer=$(shuf -n 1 -i0-$(expr ${#TRAILERS[@]}) )
       printf "<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <movie>
   <title>${base_name[@]}</title>
@@ -176,11 +187,12 @@ for f in "$1"/*; do
   <studio>${STUDIOS[studio-1]}</studio>
   <tag>${SEARCH_TAGS[search_tag-1]}</tag>
   <tag>${SEARCH_TAGS[search_tag-2]}</tag>
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[trailer-1]}</trailer>  
 </movie>" > "${f%.*}/${base_name[@]}"'.nfo'  #Rich Demo/Cancun Family Trip/Cancun Family Trip.nfo
       echo -e "${RED}DONE!${NC}"
     fi
 
-    if [[ ! "${@:2}" == *"-nomusic"* ]] && [ $COUNTER -lt 5 ]; then      
+    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-nomusic"* ]] && [ $COUNTER -lt 5 ]; then      
         echo -e -n "${RED}THEME MUSIC :${NC} Creating optional theme song (Due to copyright, ONLY the first 5 folders)..."  
         output_file="$1"/${base_name[@]}"/theme.mp3"   #"Rich Demo/Cancun Family Trip/"  
         source_url='https://filesamples.com/samples/audio/mp3/sample'$COUNTER'.mp3'
