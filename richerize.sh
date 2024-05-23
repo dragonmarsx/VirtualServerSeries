@@ -1,10 +1,12 @@
 #!/bin/bash
 MAX_POSTERS=2
 MAX_BACKDROPS=2
+MPAAS=('TV-Y' 'APPROVED' 'TV-G' 'PG-13' 'PG-13' 'R' 'TV-MA')
 ACTORS=('Sara Hayek' 'Liza Taylor' 'Gina Close' 'Jimmy Chan' 'Lucho DiCaprio' 'Ant Banderas' 'Penelope Reyes')
 ROLES=('the driver' 'the visitor' 'the stunt' 'the clown' 'the firefighter' 'the hero' 'secondary paper' 'the extra' 'ice cream seller' 'the who knows who')
+DIRECTORS=('Dhina Marca' 'Elmer Curio' 'Esteban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
+GENRES=( $(shuf -e "Drama" "Thriller" "Romance" "Comedy" "Adventure" "Fiction" "Suspense" "Documentary" "Anime") )
 STUDIOS=('Metro Golden Meyer' 'Univero Latino Studios' 'Paramount Entertainment')
-DIRECTOR=('Dhina Marca' 'Elmer Curio' 'Esteban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
 SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets')
 TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q')
 ###############
@@ -138,8 +140,7 @@ for f in "$1"/*; do
       rating=( $(shuf -e 7 8 9 10) )
       decade=( $(shuf -e 1980 1990 2000 2010 2020) ) 
       digit=( $(shuf -e 0 1 2 3 4 5 6 7 8 9) )
-      mpaa=( $(shuf -e "TV-Y" "APPROVED" "TV-G" "PG-13" "PG-13" "R" "TV-MA") ) 
-      genres=( $(shuf -e "Drama" "Thriller" "Romance" "Comedy" "Adventure" "Fiction" "Suspense" "Documentary" "Anime") )
+
       default_plot="<![CDATA[Enjoy '${streams_stream_0_nb_frames}' frames of awesome content in '${format_duration}' of duration.]]>"
       if [ ! -f  "$1/plots.txt" ]; then
           IFS=$'\n'    
@@ -155,17 +156,25 @@ for f in "$1"/*; do
           sleep 45 #secs. required to complete the xidel download
       fi
       if [ -f "$1/plots.txt" ]; then    
-          readarray -t plot < "$1/plots.txt"
+          readarray -t PLOTS < "$1/plots.txt"
       else
-          plot=($default_plot)
+          PLOTS=($default_plot)
       fi
-      random_plot_text_line=($(shuf -i0-$(expr ${#plot[@]})))
-      actor=$(shuf -n 1 -i1-$(expr ${#ACTORS[@]}) )
-      role=$(shuf -n 1 -i1-$(expr ${#ROLES[@]}) )
-      director=$(shuf -n 1 -i1-$(expr ${#DIRECTOR[@]}) )
-      studio=$(shuf -n 1 -i1-$(expr ${#STUDIOS[@]}) )
-      search_tag=$(shuf -n 1 -i1-$(expr ${#SEARCH_TAGS[@]}) )      
-      random_trailer=( $(shuf -e $(seq 0 $(expr $(expr "${#TRAILER_IDS[@]}") - $(expr 1))) ) )
+
+      rating=( $(shuf -e 7 8 9 10) )
+      decade=( $(shuf -e 1980 1990 2000 2010 2020) ) 
+      digit=( $(shuf -e 0 1 2 3 4 5 6 7 8 9) )
+      if [ $COUNTER -eq 1 ]; then #do  random shuffle only one time
+        plot=( $(shuf -e $(seq 0 $(expr $(expr "${#PLOTS[@]}") - $(expr 1))) ) )
+        mpaa=( $(shuf -e $(seq 0 $(expr $(expr "${#MPAAS[@]}") - $(expr 1))) ) )
+        actor=( $(shuf -e $(seq 0 $(expr $(expr "${#ACTORS[@]}") - $(expr 1))) ) )
+        role=( $(shuf -e $(seq 0 $(expr $(expr "${#ROLES[@]}") - $(expr 1))) ) )
+        director=( $(shuf -e $(seq 0 $(expr $(expr "${#DIRECTORS[@]}") - $(expr 1))) ) )
+        genre=( $(shuf -e $(seq 0 $(expr $(expr "${#GENRES[@]}") - $(expr 1))) ) )
+        studio=( $(shuf -e $(seq 0 $(expr $(expr "${#STUDIOS[@]}") - $(expr 1))) ) )
+        tag=( $(shuf -e $(seq 0 $(expr $(expr "${#SEARCH_TAGS[@]}") - $(expr 1))) ) )
+        trailer=( $(shuf -e $(seq 0 $(expr $(expr "${#TRAILER_IDS[@]}") - $(expr 1))) ) )
+      fi
       printf "<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <movie>
   <title>${base_name[@]}</title>
@@ -173,25 +182,25 @@ for f in "$1"/*; do
   <rating>${rating[1]}</rating>
   <criticrating>${rating[2]}.${digit[2]}</criticrating> 
   <year>$((${decade[1]} + ${digit[1]}))</year>
-  <mpaa>${mpaa[1]}</mpaa>
+  <mpaa>${MPAAS[${mpaa[$COUNTER]}]}</mpaa>
   <dateadded>2021</dateadded>
   <tagline>Overview</tagline>
-  <plot>${plot[$random_plot_text_line]}</plot>
+  <plot>${PLOTS[${plot[$COUNTER]}]}</plot>
   <actor>
-    <name>${ACTORS[actor-2]}</name>
-    <role>${ROLES[role-2]}</role>
+    <name>${ACTORS[${actor[$COUNTER]}]}</name>
+    <role>${ROLES[${role[$COUNTER]}]}</role>
   </actor>
   <actor>
-    <name>${ACTORS[actor-1]}</name>
-    <role>${ROLES[role-1]}</role>
+    <name>${ACTORS[${actor[$COUNTER+1]}]}/name>
+    <role>${ROLES[${role[$COUNTER+1]}]}</role>
   </actor>
-  <director>${DIRECTOR[director-1]}</director>
-  <genre>${genres[1]}</genre>
-  <genre>${genres[2]}</genre>
-  <studio>${STUDIOS[studio-1]}</studio>
-  <tag>${SEARCH_TAGS[search_tag-1]}</tag>
-  <tag>${SEARCH_TAGS[search_tag-2]}</tag>
-  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[${random_trailer[$i]}]}</trailer>  
+  <director>${DIRECTORS[${director[$COUNTER]}]}</director>
+  <genre>${GENRES[${genre[$COUNTER]}]}</genre>
+  <genre>${GENRES[${genre[$COUNTER+1]}]}</genre>
+  <studio>${STUDIOS[${studio[$COUNTER]}]}</studio>
+  <tag>${SEARCH_TAGS[${tag[$COUNTER]}]}</tag>
+  <tag>${SEARCH_TAGS[${tag[$COUNTER+1]}]}</tag>
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[${trailer[$COUNTER]}]}</trailer>  
 </movie>" > "${f%.*}/${base_name[@]}"'.nfo'  #Rich Demo/Cancun Family Trip/Cancun Family Trip.nfo
       echo -e "${RED}DONE!${NC}"
     fi
@@ -213,4 +222,5 @@ done
 count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images plus other assets were created to enhance the user viewing experience.\n\n" 
 #EOF
+
 
