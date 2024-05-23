@@ -6,7 +6,7 @@ ROLES=('the driver' 'the visitor' 'the stunt' 'the clown' 'the firefighter' 'the
 STUDIOS=('Metro Golden Meyer' 'Univero Latino Studios' 'Paramount Entertainment')
 DIRECTOR=('Dhina Marca' 'Elmer Curio' 'Esteban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
 SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets')
-TRAILER_IDS=('0ABCDEFHRG|0' 'v-PjgYDrg70|1' 'iurbZwxKFUE|2' 'hu9bERy7XGY|3' 'G2gO5Br6r_4|4' 'un7a-i6pTS4|5' '-xjqxtt18Ys|6' 'LAr8SrBkDTI|7' 'vZnBR4SDIEs|8' 'mfw2JSDXUjE|9' 'CxwTLktovTU|10' 'eHcZlPpNt0Q|11')
+TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q')
 ###############
 SUPPORTED_EXT=("mkv" "mp4" "avi")
 VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb)
@@ -70,7 +70,7 @@ for f in "$1"/*; do
     ffmpeg_ssMidFrameORIGINAL=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.5")")
     ffmpeg_ssMidFrame=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.${aroundBegining[0]}")")
     
-    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-noposter"* ]]; then
+    if [[ ! "${typed_arguments,,}" == *"-noposter"* ]]; then
       echo -e -n "${RED}POSTERS     : ${NC}Creating main image poster..."
       mkdir -p "${f%.*}/_temp" 
       ffmpeg_vfPoster="crop=in_w/2:in_h,select='not(mod(n\,300))',setpts=N/TB"
@@ -92,11 +92,11 @@ for f in "$1"/*; do
       echo -e "${RED}DONE!${NC}"   
 	fi
         
-    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-noback"* ]]; then
+    if [[ ! "${typed_arguments,,}" == *"-noback"* ]]; then
       echo -e -n "${RED}BACKDROPS   :${NC} Creating main backdrop image..."
       ffmpeg -ss $(bc -l <<< 'scale=2;'${ffmpeg_ssMidFrame}/2) -i "${ffmpeg_i[@]}" -vf "hue=s=3,scale=2160:-1" -frames:v 1 -loglevel error "${f%.*}/backdrop.jpg" -y 
       echo -e -n "${RED}DONE!${NC}.  Creating additional backdrops..."   
-      if [[ "${TYPED_ARGUMENTS,,}" == *"-rgb"* ]]
+      if [[ "${typed_arguments,,}" == *"-rgb"* ]]
       then
         eqR="eq=gamma_r=4:gamma_g=1:gamma_b=0,hue=s=10"; eqG="eq=gamma_r=0.2:gamma_g=1.1:gamma_b=0";
         eqB="eq=gamma_r=0:gamma_g=0.7:gamma_b=10";       eqC="eq=gamma_r=0.2:gamma_g=2:gamma_b=6";
@@ -117,7 +117,7 @@ for f in "$1"/*; do
       echo -e "${RED}DONE!${NC}"
     fi
     
-    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-nologo"* ]]; then
+    if [[ ! "${typed_arguments,,}" == *"-nologo"* ]]; then
       echo -e -n "${RED}CLEARLOGO   :${NC} Creating optional Clearlogo.png image..."  
       font_color=( $(shuf -e "white" "yellow" "orange" "turquoise" "green") )
       border_color=( $(shuf -e "red" "black" "blue" "magenta") )
@@ -133,7 +133,7 @@ for f in "$1"/*; do
       echo -e "${RED}DONE!${NC}"
     fi
     
-    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-nometa"* ]]; then 
+    if [[ ! "${typed_arguments,,}" == *"-nometa"* ]]; then 
       echo -e -n "${RED}METAFILE    :${NC} Creating '${base_name[@]}.nfo' --a template XML metadata file..."
       rating=( $(shuf -e 7 8 9 10) )
       decade=( $(shuf -e 1980 1990 2000 2010 2020) ) 
@@ -164,8 +164,8 @@ for f in "$1"/*; do
       role=$(shuf -n 1 -i1-$(expr ${#ROLES[@]}) )
       director=$(shuf -n 1 -i1-$(expr ${#DIRECTOR[@]}) )
       studio=$(shuf -n 1 -i1-$(expr ${#STUDIOS[@]}) )
-      search_tag=$(shuf -n 1 -i1-$(expr ${#SEARCH_TAGS[@]}) )
-      trailer=$(shuf -n 1 -i0-$(expr ${#TRAILERS[@]}) )
+      search_tag=$(shuf -n 1 -i1-$(expr ${#SEARCH_TAGS[@]}) )      
+      random_trailer=( $(shuf -e $(seq 0 $(expr $(expr "${#TRAILER_IDS[@]}") - $(expr 1))) ) )
       printf "<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <movie>
   <title>${base_name[@]}</title>
@@ -191,12 +191,12 @@ for f in "$1"/*; do
   <studio>${STUDIOS[studio-1]}</studio>
   <tag>${SEARCH_TAGS[search_tag-1]}</tag>
   <tag>${SEARCH_TAGS[search_tag-2]}</tag>
-  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[trailer-1]}</trailer>  
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[${random_trailer[$i]}]}</trailer>  
 </movie>" > "${f%.*}/${base_name[@]}"'.nfo'  #Rich Demo/Cancun Family Trip/Cancun Family Trip.nfo
       echo -e "${RED}DONE!${NC}"
     fi
 
-    if [[ ! "${TYPED_ARGUMENTS,,}" == *"-nomusic"* ]] && [ $COUNTER -lt 5 ]; then      
+    if [[ ! "${typed_arguments,,}" == *"-nomusic"* ]] && [ $COUNTER -lt 5 ]; then      
         echo -e -n "${RED}THEME MUSIC :${NC} Creating optional theme song (Due to copyright, ONLY the first 5 folders)..."  
         output_file="$1"/${base_name[@]}"/theme.mp3"   #"Rich Demo/Cancun Family Trip/"  
         source_url='https://filesamples.com/samples/audio/mp3/sample'$COUNTER'.mp3'
@@ -213,6 +213,3 @@ done
 count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images plus other assets were created to enhance the user viewing experience.\n\n" 
 #EOF
-
-
-
