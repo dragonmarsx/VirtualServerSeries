@@ -13,8 +13,9 @@ VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb)
 YELLOW='\033[1;33m'
 RED='\033[0;33m'
 NC='\033[0m' 
-
 COUNTER=0;TOTAL_COUNTER=0
+
+#Start argument vailidation
 if [[ -z ${@:1} ]] || [[ ${@:1} == -* ]]; then
   echo -e "${RED}Missing argument. No directory name in the command line.${NC}"
   echo -e "Example: ./richerize.sh ${YELLOW}MyDirectoryWithFiles${NC}"
@@ -28,11 +29,13 @@ for f in "$1"/*; do
     let COUNTER++
 done
 if [ $COUNTER -eq 0 ]; then echo -e "${RED}Error:${NC} Missing directory or directory has no content ${YELLOW}$1${NC}.\n"; exit 0; fi
-TYPED_ARGUMENTS=${@:2}
-for i in ${TYPED_ARGUMENTS[@]}; do
+typed_arguments=${@:2}
+for i in ${typed_arguments[@]}; do
   if [[ " ${VALID_ARGUMENTS[*]} " =~ [[:space:]]${i,,}[[:space:]] ]]; then recognized_args+=("${i,,} "); fi
 done
+#Ends argument vailidation
 
+#Start initial screen
 TOTAL_COUNTER=$COUNTER
 echo -e "================================================================================"
 echo -e "A total of "${RED}$TOTAL_COUNTER${NC}" file(s) will be moved inside ${YELLOW}$1."
@@ -41,13 +44,14 @@ echo -e "${YELLOW}BEFORE${NC}: "$old_f
 echo -e "${YELLOW} AFTER${NC}: "$new_f
 echo -e "________________________________________________________________________________"
 echo -e "Valid arguments: "${VALID_ARGUMENTS[@]}
-if [ ! ${#recognized_args[@]} -eq 0 ]; then echo -e "${YELLOW}Recognized args: "${recognized_args[@]}${NC}; fi
+if [ ${#recognized_args[@]} -gt 0 ]; then echo -e "Recognized args: ${YELLOW}"${recognized_args[@]}${NC}; fi
 echo -e "________________________________________________________________________________"
 echo -e "${YELLOW}Press Enter key to continue OR Ctrl/Option +C to abort.${NC}"
 read
 if [[ $(whoami) -ne "root" ]]; then echo -e "Execute with root account privileges: ${YELLOW}su - ${NC}"; exit 0; fi
+#End initial screen
 
-
+#Start funtionalify
 COUNTER=1
 for f in "$1"/*; do
     [ -d "$f" ] && continue; 
@@ -203,6 +207,12 @@ for f in "$1"/*; do
   
     let COUNTER++
 done
+#End funtionality
+
+#Summary
 count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images plus other assets were created to enhance the user viewing experience.\n\n" 
+#EOF
+
+
 
