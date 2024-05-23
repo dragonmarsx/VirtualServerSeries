@@ -11,13 +11,14 @@ SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets')
 TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q')
 ###############
 SUPPORTED_EXT=("mkv" "mp4" "avi")
-VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb)
+VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb -docopy)
 YELLOW='\033[1;33m'
 RED='\033[0;33m'
 NC='\033[0m' 
 COUNTER=0;TOTAL_COUNTER=0
 
 #Start argument vailidation
+if [[ $(whoami) -ne "root" ]]; then echo -e "Execute script with root account privileges: ${YELLOW}su - ${NC}"; exit 0; fi
 if [[ -z ${@:1} ]] || [[ ${@:1} == -* ]]; then
   echo -e "${RED}Missing argument. No directory name in the command line.${NC}"
   echo -e "Example: ./richerize.sh ${YELLOW}MyDirectoryWithFiles${NC}"
@@ -39,35 +40,39 @@ done
 
 #Start initial screen
 TOTAL_COUNTER=$COUNTER
-echo -e "================================================================================"
+echo -e "====================================================================================="
 echo -e "A total of "${RED}$TOTAL_COUNTER${NC}" file(s) will be moved inside ${YELLOW}$1."
 echo -e "${NC}Each media file(s) will be moved inside its new folder.  Example:"
 echo -e "${YELLOW}BEFORE${NC}: "$old_f
 echo -e "${YELLOW} AFTER${NC}: "$new_f
-echo -e "________________________________________________________________________________"
+echo -e "_____________________________________________________________________________________"
 echo -e "Valid arguments: "${VALID_ARGUMENTS[@]}
-if [ ${#recognized_args[@]} -gt 0 ]; then echo -e "Recognized args: ${YELLOW}"${recognized_args[@]}${NC}; fi
-echo -e "________________________________________________________________________________"
+if [ ${#recognized_args[@]} -gt 0 ]; then echo -e "    Recognized : ${YELLOW}"${recognized_args[@]}${NC}; fi
+echo -e "_____________________________________________________________________________________"
 echo -e "${YELLOW}Press Enter key to continue OR Ctrl/Option +C to abort.${NC}"
 read
-if [[ $(whoami) -ne "root" ]]; then echo -e "Execute with root account privileges: ${YELLOW}su - ${NC}"; exit 0; fi
 #End initial screen
 
-#Start funtionalify
+#Start funtionality
 COUNTER=1
 for f in "$1"/*; do
     [ -d "$f" ] && continue; 
     if [[ ! ${SUPPORTED_EXT[@]} =~ ${f##*.} ]]; then continue; fi
     new_f=${f%.*}/"$(basename -- "$f")"  #the new file absolute path
-    ffmpeg_i=("$new_f")   	             #array of file names deals w/white spaces.
+    ffmpeg_i=("$new_f")   	             #an array of file names understands white spaces.
     new_f_array=("$new_f"); x1=${new_f_array[@]}; x2=${x1%.*}
     base_name=${x2##*/} 
     
     echo -e -n "${RED}("$COUNTER"of"$TOTAL_COUNTER")${NC} Moving ${YELLOW}"$(basename -- "$f")${NC}" to new folder..."
     mkdir -p "${f%.*}"
-    cp -a "$f" "${f%.*}/"  #should be mv instead of cp
-    echo -e "${RED}MOVED!${NC}"
-
+    if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
+      cp -a "$f" "${f%.*}/"
+      echo -e "${RED}COPIED!${NC}"
+    else
+      mv "$f" "${f%.*}/" 
+      echo -e "${RED}MOVED!${NC}"
+    fi
+    
     aroundBegining=( $(shuf -e 1 2 3) ) #random digit for 1 tenth, 1 quart or 1 third of the total length
     ffmpeg_ssMidFrameORIGINAL=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.5")")
     ffmpeg_ssMidFrame=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.${aroundBegining[0]}")")
@@ -79,13 +84,13 @@ for f in "$1"/*; do
       ffmpeg_vfScaled="crop=in_w/2:in_h,select='not(mod(n\,300))',setpts=N/TB,scale=-1:1080'"
       radius=30
       ffmpeg_rounded=",format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${radius})*gt(abs(H/2-Y),H/2-${radius}),if(lte(hypot(${radius}-(W/2-abs(W/2-X)),${radius}-(H/2-abs(H/2-Y))),${radius}),255,0),255)'"
-      eval $(ffprobe -v quiet -show_format -of flat=s=_ -show_entries stream=height,width,nb_frames,duration,codec_name -sexagesimal "$f")        
+      eval $(ffprobe -v quiet -show_format -of flat=s=_ -show_entries stream=height,width,nb_frames,duration,codec_name -sexagesimal "${ffmpeg_i[@]}" )        
       height=${streams_stream_0_height}
      
       ffmpeg -ss "${ffmpeg_ssMidFrame[@]}" -i "${ffmpeg_i[@]}" -vf $ffmpeg_vfPoster$ffmpeg_rounded -frames:v 1 -q:v 5 -loglevel error "${f%.*}/poster.png" -y      
       echo -e -n "${RED}DONE!${NC}.  Creating more alternatives in _temp folder..."
       MIN_HEIGHT=500            
-      if [ $MIN_HEIGHT -gt $height ]
+      if [[ $MIN_HEIGHT -gt $height ]]
       then   #Un Cu         
          ffmpeg -i "${ffmpeg_i[@]}" -vf $ffmpeg_vfScaled$ffmpeg_rounded -r 1 -vframes $MAX_POSTERS -q:v 5 -loglevel error "${f%.*}/_temp/poster%01d.png" -y
       else  #Kim Fi
@@ -112,7 +117,7 @@ for f in "$1"/*; do
       ffmpeg_eqRandom=( $(shuf -e $eqR $eqG $eqB $eqC $eqM $eqV $eqY $eqT $eqS $eqP $eqG2 $eqK) ) 
       n=1;
       while [ $n -lt $MAX_BACKDROPS ]; do
-          ffmpeg_ssAtFrame=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$f")*0.$n")") 
+          ffmpeg_ssAtFrame=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "${ffmpeg_i[@]}")*0.$n")") 
           ffmpeg -ss "${ffmpeg_ssAtFrame[@]}" -i "${ffmpeg_i[@]}" -vf "${ffmpeg_eqRandom[$n]},scale=2160:-1" -vframes 1 -q:v 5 -loglevel error "${f%.*}/backdrop$n.jpg" -y
           let n++
       done
@@ -155,7 +160,7 @@ for f in "$1"/*; do
           echo -n ". Retrieving initial html data. This takes no more than a minute. "
           sleep 45 #secs. required to complete the xidel download
       fi
-      if [ -f "$1/plots.txt" ]; then    
+      if [ -f "$1/plots.txt" ]; then
           readarray -t PLOTS < "$1/plots.txt"
       else
           PLOTS=($default_plot)
@@ -175,6 +180,10 @@ for f in "$1"/*; do
         tag=( $(shuf -e $(seq 0 $(expr $(expr "${#SEARCH_TAGS[@]}") - $(expr 1))) ) )
         trailer=( $(shuf -e $(seq 0 $(expr $(expr "${#TRAILER_IDS[@]}") - $(expr 1))) ) )
       fi
+      if [[ ! "${typed_arguments,,}" == *"-notrailer"* ]]; then 
+        trailer_element="
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[${trailer[$COUNTER]}]}</trailer>"
+      fi      
       printf "<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <movie>
   <title>${base_name[@]}</title>
@@ -191,7 +200,7 @@ for f in "$1"/*; do
     <role>${ROLES[${role[$COUNTER]}]}</role>
   </actor>
   <actor>
-    <name>${ACTORS[${actor[$COUNTER+1]}]}/name>
+    <name>${ACTORS[${actor[$COUNTER+1]}]}</name>
     <role>${ROLES[${role[$COUNTER+1]}]}</role>
   </actor>
   <director>${DIRECTORS[${director[$COUNTER]}]}</director>
@@ -199,9 +208,8 @@ for f in "$1"/*; do
   <genre>${GENRES[${genre[$COUNTER+1]}]}</genre>
   <studio>${STUDIOS[${studio[$COUNTER]}]}</studio>
   <tag>${SEARCH_TAGS[${tag[$COUNTER]}]}</tag>
-  <tag>${SEARCH_TAGS[${tag[$COUNTER+1]}]}</tag>
-  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[${trailer[$COUNTER]}]}</trailer>  
-</movie>" > "${f%.*}/${base_name[@]}"'.nfo'  #Rich Demo/Cancun Family Trip/Cancun Family Trip.nfo
+  <tag>${SEARCH_TAGS[${tag[$COUNTER+1]}]}</tag>$trailer_element
+</movie>" > "${f%.*}/${base_name[@]}"'.nfo'
       echo -e "${RED}DONE!${NC}"
     fi
 
@@ -222,5 +230,4 @@ done
 count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images plus other assets were created to enhance the user viewing experience.\n\n" 
 #EOF
-
 
