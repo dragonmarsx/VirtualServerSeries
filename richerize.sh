@@ -3,13 +3,14 @@ MAX_POSTERS=2
 MAX_BACKDROPS=2
 MPAAS=('TV-Y' 'APPROVED' 'TV-G' 'PG-13' 'PG-13' 'R' 'TV-MA')
 ACTORS=('Sara Hayek' 'Liza Taylor' 'Gina Close' 'Jimmy Chan' 'Lucho DiCaprio' 'Ant Banderas' 'Penelope Reyes')
-ROLES=('the driver' 'the visitor' 'the stunt' 'the clown' 'the firefighter' 'the hero' 'secondary paper' 'the extra' 'ice cream seller' 'the who knows who')
+ROLES=('the guest star' 'the home princess' 'the queen been' 'the goofy' 'the bully' 'the car driver' 'the expert biker' 'the football coach' 'the neighbor' 'ice cream seller' 'the action hero' 'the aristocratic actor' 'the cat lady' 'the choosen one' 'the con arist' 'the damsel in distress' 'the latin lover' 'the bandido' 'the femme fatale' 'the figaro' 'the last standing' 'the folk hero' 'the jocker' 'the supernatural entity' 'the gypsy' 'the harlequin' 'the igor' 'the innocent' 'the knight-errant' 'the machiavelle' 'the eccentric' 'the dreamy' 'the attactive' 'the friendly villain' 'the diva' 'the legend' 'the noble prince' 'the mischievous' 'the preppy' 'the seductor' 'the schoolma`am' 'the impostor' 'the sidekick' 'the southern belle' 'the wise' 'the yuppie')
 DIRECTORS=('Dhina Marca' 'Elmer Curio' 'Esteban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
-GENRES=( $(shuf -e "Drama" "Thriller" "Romance" "Comedy" "Adventure" "Fiction" "Suspense" "Documentary" "Anime") )
-STUDIOS=('Metro Golden Meyer' 'Univero Latino Studios' 'Paramount Entertainment')
-SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets')
+GENRES=('Thriller' 'Action' 'Reality' 'Adventure' 'Fiction' 'Suspense' 'Comedy drama' 'Family drama' 'Romance' 'Drama' 'Comedy' 'Mystery' 'Soap opera' 'Documentary' 'Sports' )
+STUDIOS=('Metro Golden Meyer' '20th Century Fox' 'Marvel Universe' 'Hanna-Barbera Studios' 'DreamWorks Animation' 'Paramount Pictures' 'Universal Pictures' 'Columbia Pictures' 'Warner Bros. Studios' 'Sony Picture Studios')
+SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets' 'park' 'city' 'lake' 'snow' 'river')
 TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q')
-###############
+
+#Do not modify below this line
 SUPPORTED_EXT=("mkv" "mp4" "avi")
 VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb -docopy)
 YELLOW='\033[1;33m'
@@ -230,4 +231,6 @@ done
 count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images plus other assets were created to enhance the user viewing experience.\n\n" 
 #EOF
+#Inspiration: AskUbuntu-Iterate over files in directory, create folders based on file names and move files into respective folders
+
 
