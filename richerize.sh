@@ -64,16 +64,32 @@ for f in "$1"/*; do
     new_f_array=("$new_f"); x1=${new_f_array[@]}; x2=${x1%.*}
     base_name=${x2##*/} 
     
-    echo -e -n "${RED}("$COUNTER"of"$TOTAL_COUNTER")${NC} Moving ${YELLOW}"$(basename -- "$f")${NC}" to new folder..."
-    mkdir -p "${f%.*}"
+    echo -e -n "${RED}("$COUNTER"of"$TOTAL_COUNTER")${NC} Working on ${YELLOW}"$(basename -- "$f")${NC}"..."
+    mkdir -p "${f%.*}" #new folder created!
+
+    ffmpeg_f="$f"; chapter_info="${f%.*}-Chapters.txt"; Video_with_Chapter_info="${ffmpeg_i[@]}" 
     if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
-      cp -a "$f" "${f%.*}/"
-      echo -e "${RED}COPIED!${NC}"
+      if [ -f "$chapter_info" ]; then  #chapter file exist, we need to work on it
+        echo -e -n " Processing chapter..." 
+      	ffmpeg -i "$ffmpeg_f" -loglevel error  -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"
+        echo -e "${RED}COPIED WITH CHAPTER DATA!${NC}"
+      else   
+        cp -a "$f" "${f%.*}/"
+        echo -e "${RED}COPIED!${NC}"
+      fi
     else
-      mv "$f" "${f%.*}/" 
-      echo -e "${RED}MOVED!${NC}"
-    fi
-    
+      if [ -f "$chapter_info" ]; then  #chapter file exist, we need to work on it
+        echo -e -n " Processing chapter..." 
+       	ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"  #ffmpeg do not move files.
+        sleep 5;
+ 	    rm "$f"        
+        echo -e "${RED}MOVED WITH CHAPTER DATA!${NC}"     
+      else 
+        mv "$f" "${f%.*}/" 
+        echo -e "${RED}MOVED!${NC}"
+      fi
+    fi    
+
     aroundBegining=( $(shuf -e 1 2 3) ) #random digit for 1 tenth, 1 quart or 1 third of the total length
     ffmpeg_ssMidFrameORIGINAL=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.5")")
     ffmpeg_ssMidFrame=("$(bc -l <<< "$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "$new_f")*0.${aroundBegining[0]}")")
@@ -171,15 +187,15 @@ for f in "$1"/*; do
       decade=( $(shuf -e 1980 1990 2000 2010 2020) ) 
       digit=( $(shuf -e 0 1 2 3 4 5 6 7 8 9) )
       if [ $COUNTER -eq 1 ]; then #do  random shuffle only one time
-        plot=( $(shuf -e $(seq 0 $(expr $(expr "${#PLOTS[@]}") - $(expr 1))) ) )
-        mpaa=( $(shuf -e $(seq 0 $(expr $(expr "${#MPAAS[@]}") - $(expr 1))) ) )
-        actor=( $(shuf -e $(seq 0 $(expr $(expr "${#ACTORS[@]}") - $(expr 1))) ) )
-        role=( $(shuf -e $(seq 0 $(expr $(expr "${#ROLES[@]}") - $(expr 1))) ) )
-        director=( $(shuf -e $(seq 0 $(expr $(expr "${#DIRECTORS[@]}") - $(expr 1))) ) )
-        genre=( $(shuf -e $(seq 0 $(expr $(expr "${#GENRES[@]}") - $(expr 1))) ) )
-        studio=( $(shuf -e $(seq 0 $(expr $(expr "${#STUDIOS[@]}") - $(expr 1))) ) )
-        tag=( $(shuf -e $(seq 0 $(expr $(expr "${#SEARCH_TAGS[@]}") - $(expr 1))) ) )
-        trailer=( $(shuf -e $(seq 0 $(expr $(expr "${#TRAILER_IDS[@]}") - $(expr 1))) ) )
+        plot=( $(shuf -e $(seq 0 $(bc <<<"${#PLOTS[@]} - 1") ) ) )  
+        mpaa=( $(shuf -e $(seq 0 $(bc <<<"${#MPAAS[@]} - 1") ) ) ) 
+        actor=( $(shuf -e $(seq 0 $(bc <<<"${#ACTORS[@]} - 1") ) ) )
+        role=( $(shuf -e $(seq 0 $(bc <<<"${#ROLES[@]} - 1") ) ) ) 
+        director=( $(shuf -e $(seq 0 $(bc <<<"${#DIRECTORS[@]} - 1") ) ) )
+        genre=( $(shuf -e $(seq 0 $(bc <<<"${#GENRES[@]} - 1") ) ) )
+        studio=( $(shuf -e $(seq 0 $(bc <<<"${#STUDIOS[@]} - 1") ) ) )
+        tag=( $(shuf -e $(seq 0 $(bc <<<"${#SEARCH_TAGS[@]} - 1") ) ) )
+        trailer=( $(shuf -e $(seq 0 $(bc <<<"${#TRAILER_IDS[@]} - 1") ) ) )
       fi
       if [[ ! "${typed_arguments,,}" == *"-notrailer"* ]]; then 
         trailer_element="
@@ -197,16 +213,16 @@ for f in "$1"/*; do
   <tagline>Overview</tagline>
   <plot>${PLOTS[${plot[$COUNTER]}]}</plot>
   <actor>
-    <name>${ACTORS[${actor[$COUNTER]}]}</name>
-    <role>${ROLES[${role[$COUNTER]}]}</role>
+    <name>${ACTORS[${actor[$(bc <<<"2*$COUNTER-1")]}]}</name>
+    <role>${ROLES[${role[$(bc <<<"2*$COUNTER")]}]}</role>
   </actor>
   <actor>
-    <name>${ACTORS[${actor[$COUNTER+1]}]}</name>
-    <role>${ROLES[${role[$COUNTER+1]}]}</role>
+    <name>${ACTORS[${actor[$(bc <<<"2*$COUNTER-1")]}]}</name>
+    <role>${ROLES[${role[$(bc <<<"2*$COUNTER")]}]}</role>
   </actor>
   <director>${DIRECTORS[${director[$COUNTER]}]}</director>
   <genre>${GENRES[${genre[$COUNTER]}]}</genre>
-  <genre>${GENRES[${genre[$COUNTER+1]}]}</genre>
+  <genre>${GENRES[${genre[$COUNTER+2]}]}</genre>
   <studio>${STUDIOS[${studio[$COUNTER]}]}</studio>
   <tag>${SEARCH_TAGS[${tag[$COUNTER]}]}</tag>
   <tag>${SEARCH_TAGS[${tag[$COUNTER+1]}]}</tag>$trailer_element
