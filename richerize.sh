@@ -4,11 +4,11 @@ MAX_BACKDROPS=2
 MPAAS=('TV-Y' 'APPROVED' 'TV-G' 'PG-13' 'PG-13' 'R' 'TV-MA')
 ACTORS=('Sara Hayek' 'Liza Taylor' 'Gina Close' 'Jimmy Chan' 'Lucho DiCaprio' 'Ant Banderas' 'Penelope Reyes')
 ROLES=('the guest star' 'the home princess' 'the queen been' 'the goofy' 'the bully' 'the car driver' 'the expert biker' 'the football coach' 'the neighbor' 'ice cream seller' 'the action hero' 'the aristocratic actor' 'the cat lady' 'the choosen one' 'the con arist' 'the damsel in distress' 'the latin lover' 'the bandido' 'the femme fatale' 'the figaro' 'the last standing' 'the folk hero' 'the jocker' 'the supernatural entity' 'the gypsy' 'the harlequin' 'the igor' 'the innocent' 'the knight-errant' 'the machiavelle' 'the eccentric' 'the dreamy' 'the attactive' 'the friendly villain' 'the diva' 'the legend' 'the noble prince' 'the mischievous' 'the preppy' 'the seductor' 'the schoolma`am' 'the impostor' 'the sidekick' 'the southern belle' 'the wise' 'the yuppie')
-DIRECTORS=('Dhina Marca' 'Elmer Curio' 'Esteban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
+DIRECTORS=('Dhina Marca' 'Elmher Curio' 'Steban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
 GENRES=('Thriller' 'Action' 'Reality' 'Adventure' 'Fiction' 'Suspense' 'Comedy drama' 'Family drama' 'Romance' 'Drama' 'Comedy' 'Mystery' 'Soap opera' 'Documentary' 'Sports' )
 STUDIOS=('Metro Golden Meyer' '20th Century Fox' 'Marvel Universe' 'Hanna-Barbera Studios' 'DreamWorks Animation' 'Paramount Pictures' 'Universal Pictures' 'Columbia Pictures' 'Warner Bros. Studios' 'Sony Picture Studios')
 SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets' 'park' 'city' 'lake' 'snow' 'river')
-TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q')
+TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q' 'CwXOrWvPBPk' '-UaGUdNJdRQ' 'eTjHiQKJUDY' 'CZ1CATNbXg0' '1XHf94YqGyQ' 'xBgSfhp5Fxo' 'GUvk7NNmB64' 'HKH7_n425Ss' 'JFsGn_JwzCc' 'sJCjKQQOqT0' '9oQ628Seb9w' 'glPzcdMX5wI' 'CGbgaHoapFM' 'DFTIL0ciHik' 'xNWSGRD5CzU' 'mE35XQFxbeo' '5iB82S8rHyg' '_MoIr7811Bs' '_MoIr7811Bs' 'siLm9q4WIjI' '9OAC55UWAQs' 'G2z-xAZRFcQ' 'WYTE2_W2O00' 'ie53R2HEZ6g' 'orAqhC-Hp_o' 'Wlo-sYrADlw' 'TQhRqtt-Fpo' 'Su7g8JVY0xI' '1sD4qkCymtI' 'kkrGBlvGK4I' 'HLw7pSXJe64' 'HlNRVZ871os' 'GV5y4yTDtBI' 'RFeNB8IlPlc' 'eRNPQmk6wLU' '4ffrsBbrrQU' 'O6i3lyx1I_g' 'Njf8U5SnM4w' 'M0vnBeHeuzs' 'i4noiCRJRoE' 'pfESEXIZ_lw' 'JX6btxoFhI8' 'eTjDsENDZ6s' '-agq5R3b43U' 'Vngk9Wp9bGk' 'vZIY2-kH-wE' '8IBNZ6O2kMk' 'ZS_8btMjx2U' 'SPHfeNgogVs' 'qCKdkbsMUA8' 'sED6FRXIHJc' 'lFzVJEksoDY' '-qCPMP4mNcQ' 'usEkWtuNn-w' 'SyYESEvDNIg' 'hAGzq5jLCEk' '2BkVf2voCr0')
 
 #Do not modify below this line
 SUPPORTED_EXT=("mkv" "mp4" "avi")
@@ -67,7 +67,7 @@ for f in "$1"/*; do
     echo -e -n "${RED}("$COUNTER"of"$TOTAL_COUNTER")${NC} Working on ${YELLOW}"$(basename -- "$f")${NC}"..."
     mkdir -p "${f%.*}" #new folder created!
 
-    ffmpeg_f="$f"; chapter_info="${f%.*}-Chapters.txt"; Video_with_Chapter_info="${ffmpeg_i[@]}" 
+    ffmpeg_f="$f"; chapter_info="${f%.*}.chapters.txt"; Video_with_Chapter_info="${ffmpeg_i[@]}" 
     if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
       if [ -f "$chapter_info" ]; then  #chapter file exist, we need to work on it
         echo -e -n " Processing chapter..." 
@@ -78,7 +78,7 @@ for f in "$1"/*; do
         echo -e "${RED}COPIED!${NC}"
       fi
     else
-      if [ -f "$chapter_info" ]; then  #chapter file exist, we need to work on it
+      if [ -f "$chapter_info" ]; then
         echo -e -n " Processing chapter..." 
        	ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"  #ffmpeg do not move files.
         sleep 5;
@@ -248,5 +248,6 @@ count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images plus other assets were created to enhance the user viewing experience.\n\n" 
 #EOF
 #Inspiration: AskUbuntu-Iterate over files in directory, create folders based on file names and move files into respective folders
+
 
 
