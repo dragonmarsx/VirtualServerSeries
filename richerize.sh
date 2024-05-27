@@ -59,19 +59,44 @@ COUNTER=1
 for f in "$1"/*; do
     [ -d "$f" ] && continue; 
     if [[ ! ${SUPPORTED_EXT[@]} =~ ${f##*.} ]]; then continue; fi
+
     new_f=${f%.*}/"$(basename -- "$f")"  #the new file absolute path
     ffmpeg_i=("$new_f")   	             #an array of file names understands white spaces.
     new_f_array=("$new_f"); x1=${new_f_array[@]}; x2=${x1%.*}
-    base_name=${x2##*/} 
-    
+    base_name=${x2##*/}    
     echo -e -n "${RED}("$COUNTER"of"$TOTAL_COUNTER")${NC} Working on ${YELLOW}"$(basename -- "$f")${NC}"..."
     mkdir -p "${f%.*}" #new folder created!
 
     ffmpeg_f="$f"; chapter_info="${f%.*}.chapters.txt"; Video_with_Chapter_info="${ffmpeg_i[@]}" 
+    function_doProcessChapterFile() {
+      while IFS= read -r line; do
+         if [[ "$line" =~ ^([0-9]):([0-5][0-9]):([0-5][0-9])[[:space:]](.*)? ]]; then
+            local title="${BASH_REMATCH[4]}"
+            local timestamp=$(( $((${BASH_REMATCH[3]} + $((${BASH_REMATCH[1]} * 60 + ${BASH_REMATCH[2]})) * 60)) * 1000))
+            local chapter_lines+=("${BASH_REMATCH[1]}:${BASH_REMATCH[2]}:${BASH_REMATCH[3]} $title")
+            local pro_timestamp+=($timestamp)
+            local pro_title+=("$title")
+        else
+          echo "problems with: $line"
+        fi
+      done < "$chapter_info" 
+      if [[ $(ffprobe -v error -show_entries format=duration -of csv=p=0 -sexagesimal "CancunFamilyTrip.mp4") =~ ^([0-9]):([0-5][0-9]):([0-5][0-9])(.*)? ]]; then
+        local pro_timestamp+=($(( $((${BASH_REMATCH[3]} + $((${BASH_REMATCH[1]} * 60 + ${BASH_REMATCH[2]})) * 60)) * 1000)))
+      fi
+      text=";FFMETADATA1\n# ${base_name[@]} (ffmpeg format)\n\n"
+      for ((i=0; i<${#pro_timestamp[@]} - 1; ++i)); do
+          text+="# ${chapter_lines[$i]}\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=${pro_timestamp[$i]}\nEND=$(bc <<<"${pro_timestamp[$i + 1]} - 1")\ntitle=${pro_title[$i]}\n\n"    
+      done
+      ffmpeg_chapter_file="${f%.*}"'/chapters.txt'
+      printf "$text" > "$ffmpeg_chapter_file"  
+      ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$ffmpeg_chapter_file" -c copy "$Video_with_Chapter_info"  
+    }   
+    
     if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
       if [ -f "$chapter_info" ]; then  #chapter file exist, we need to work on it
         echo -e -n " Processing chapter..." 
-      	ffmpeg -i "$ffmpeg_f" -loglevel error  -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"
+        function_doProcessChapterFile
+      	#ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"
         echo -e "${RED}COPIED WITH CHAPTER DATA!${NC}"
       else   
         cp -a "$f" "${f%.*}/"
@@ -80,7 +105,8 @@ for f in "$1"/*; do
     else
       if [ -f "$chapter_info" ]; then
         echo -e -n " Processing chapter..." 
-       	ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"  #ffmpeg do not move files.
+        function_doProcessChapterFile
+       	#ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$Video_with_Chapter_info"  #ffmpeg do not move files.
         sleep 5;
  	    rm "$f"        
         echo -e "${RED}MOVED WITH CHAPTER DATA!${NC}"     
@@ -232,7 +258,7 @@ for f in "$1"/*; do
 
     if [[ ! "${typed_arguments,,}" == *"-nomusic"* ]] && [ $COUNTER -lt 5 ]; then      
         echo -e -n "${RED}THEME MUSIC :${NC} Creating optional theme song (Due to copyright, ONLY the first 5 folders)..."  
-        output_file="$1"/${base_name[@]}"/theme.mp3"   #"Rich Demo/Cancun Family Trip/"  
+        output_file="$1"/${base_name[@]}"/theme.mp3"   #"Rich Demo/Cancun Family Trip/theme.mp3"  
         source_url='https://filesamples.com/samples/audio/mp3/sample'$COUNTER'.mp3'
         curl -o "$output_file" $source_url -s      
         echo -e "${RED}DONE!${NC}\n"
