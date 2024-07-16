@@ -24,7 +24,7 @@ COUNTER=0;TOTAL_COUNTER=0
 function Process_Pad () { [ "$#" -gt 1 ] && [ -n "$2" ] && printf "%$2.${2#-}s" "$1"; }
 function Process_Message_Feedback () {
   case $1 in
-      'COPY_MOVE'      ) echo -ne "${RED}$2${NC} $3\n"; return 1 ;;
+    'COPY_MOVE'      ) echo -ne "${RED}$2${NC} $3\n"; return 1 ;;
   esac
   echo -ne "\033[0K\r"    
   case $1 in
@@ -44,7 +44,6 @@ function Process_Message_Feedback () {
     'METAFILE_DONE'  ) echo -ne "${RED}METAFILE    : ${NC}Metafile with extension nfo sucessfully created.  ${RED}DONE!${NC}\n" ;;
     'THEME_DONE'     ) echo -ne "${RED}THEME AUDIO : ${NC}Thematic background audio file sucessfully created.  ${RED}DONE!${NC}\n" ;;
     'TRAILERDONE'    ) echo -ne "${RED}TRAILER     : ${NC}Trailer video clip.  ${RED}DONE!${NC}\n" ;;
-    
 
     'TRAILERS'       ) echo -ne "${YELLOW}TRAILER     : ${NC}Now, preparing trailer clip ${YELLOW}$2${NC} of $3...\033[0K" ;;
     'BACKGROUNDS'    ) echo -ne "${YELLOW}BACKGROUNDS : ${NC}Now, preparing background images ${YELLOW}$2${NC} of $3...\033[0K" ;;
@@ -83,7 +82,7 @@ function Process_Chapter_File() {
 #Argument Validation Begin
 if [[ $(whoami) -ne "root" ]]; then echo -e "Execute script with root account privileges: ${YELLOW}su - ${NC}"; exit 0; fi
 if [[ -z ${@:1} ]] || [[ ${@:1} == -* ]]; then
-    'ERROR' 'Missing argument. No directory name in the command line.'
+  Process_Message_Feedback 'ERROR' 'Missing argument. No directory name in the command line.'
   echo -e "Example: ./richerize.sh ${YELLOW}MyDirectoryWithFiles${NC}"
   echo -e "Example: ./richerize.sh ${YELLOW}'My Other Directory With spaces in its name'${NC}\n"  
   exit 0
@@ -94,7 +93,7 @@ for f in "$1"/*; do
     old_f=$f; new_f=${f%.*}/$(basename -- "$f")
     let COUNTER++
 done
-if [ $COUNTER -eq 0 ]; then Process_Message_Feedback 'ERROR' 'Missing directory or directory has no content.' $1; exit 0; fi
+if [ $COUNTER -eq 0 ]; then Process_Message_Feedback 'ERROR' 'Missing directory or directory has no content.' "$1"; exit 0; fi
 typed_arguments=${@:2}
 for i in ${typed_arguments[@]}; do
   if [[ " ${VALID_ARGUMENTS[*]} " =~ [[:space:]]${i,,}[[:space:]] ]]; then recognized_args+=("${i,,} "); fi
@@ -124,23 +123,20 @@ for f in "$1"/*; do
   [ -d "$f" ] && continue; 
   if [[ ! ${SUPPORTED_EXT[@]} =~ ${f##*.} ]]; then continue; fi
 
-  new_f=${f%.*}/"$(basename -- "$f")"  #the new file absolute path
-  ffmpeg_i=("$new_f")   	             #file names in array deals w/white spaces.
+  new_f=${f%.*}/"$(basename -- "$f")"   #the new file absolute path
+  ffmpeg_i=("$new_f")                   #file names in array deals w/white spaces.
   new_f_array=("$new_f"); x1=${new_f_array[@]}; x2=${x1%.*}
   base_name=${x2##*/}
   Process_Message_Feedback 'WORKING_ON' $COUNTER $TOTAL_COUNTER "$(basename -- "$f")"
-  mkdir -p "${f%.*}" #new folder created!
-
-
+  mkdir -p "${f%.*}"
 
 
   ffmpeg_f=("$f"); chapter_info=("${f%.*}.chapters.txt"); ffmpeg_i_with_chapters="${ffmpeg_i[@]}"
   if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
-    if [ -f "${chapter_info[@]}" ]; then  #chapter file exist, we need to work on it
+    if [ -f "${chapter_info[@]}" ]; then          #chapter file exist, we need to work on it
       echo -e -n " Processing chapter..." 
       Process_Chapter_File "$ffmpeg_f" "$chapter_info" "$ffmpeg_i_with_chapters" "${ffmpeg_f[@]}"
-      Process_Message_Feedback 'COPY_MOVE' 'COPIED!  ' 'Chapter data created in the process.'
-      #echo -e "${RED}COPIED WITH CHAPTER DATA!${NC}"
+      Process_Message_Feedback 'COPY_MOVE' 'COPIED!' 'Chapters created in the process.'
     else   
       cp -a "$f" "${f%.*}/"
       Process_Message_Feedback 'COPY_MOVE' 'COPIED!'
@@ -148,14 +144,13 @@ for f in "$1"/*; do
     fi
   else
     if [ -f "${chapter_info[@]}" ]; then
+      echo -e -n " Processing chapter..."
       Process_Chapter_File "$ffmpeg_f" "$chapter_info" "$ffmpeg_i_with_chapters" "${ffmpeg_f[@]}"
-      echo -e -n " Processing chapter..." 
-      #ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$ffmpeg_i_with_chapters"  #ffmpeg do not move files.
       sleep 5;
-      rm "$f"        
-      Process_Message_Feedback 'COPY_MOVE' 'MOVED! ' 'With chapter data created in the process.'      
-    else 
-      mv "$f" "${f%.*}/" 
+      rm "$f"
+      Process_Message_Feedback 'COPY_MOVE' 'MOVED!' 'With chapters created in the process.'
+    else
+      mv "$f" "${f%.*}/"
       Process_Message_Feedback 'COPY_MOVE' 'MOVED!'
     fi
   fi
@@ -201,31 +196,85 @@ for f in "$1"/*; do
 
   #Poster Images Begin
   if [[ ! "${typed_arguments,,}" == *"-noposter"* ]]; then
+    Process_Message_Feedback 'POSTER_START' 'Working on posters'    
     _temp="${f%.*}/_temp"; mkdir -p "$_temp"
-    if [[ $ffprobe_color_primaries == *"2020"* ]] && [[ $ffprobe_color_space == *"2020"* ]] &&  ( [[ $ffprobe_color_transfer != *"709"* ]] || [[ $ffprobe_color_transfer == *"601"* ]] ); then quality=" in HDR"; fi
-    idx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); teaser=${TEASERS[$idx]}
-    theme_bg_color=( $(shuf -e '068130' 'cceb19' '7d0a14' '063b81' '881798' '5e0053' 'c50f1f') )
-    ffmpeg_rounded="format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${poster_radius})*gt(abs(H/2-Y),H/2-${poster_radius}),if(lte(hypot(${poster_radius}-(W/2-abs(W/2-X)),${poster_radius}-(H/2-abs(H/2-Y))),${poster_radius}),255,0),255)'"
-    ffmpeg_drawbox=",drawbox=x=0:y=0:w=$ffprobe_width:h=$ffprobe_height/22:color='#${theme_bg_color}'@1:thickness=fill,drawtext=text='$teaser$quality':fontcolor=white:fontfile=DejaVuSans-Bold.ttf:x=(w-text_w)/2:y=10:fontsize=h/28"
-    ffmpeg -f lavfi -i color=c=0x$theme_bg_color:duration=1:s=720x1080:r=1 -loglevel error "$_temp/_tempbase.mp4" -y
-    ffmpeg -ss 0 -i "$_temp/_tempbase.mp4" -filter_complex "$ffmpeg_rounded$ffmpeg_drawbox" -frames:v 1 -q:v 5 -loglevel error "$_temp/_tempbase.png" -y
-    
-    for ((n=1; n<=$MAX_POSTERS; n++)); do
-      Process_Message_Feedback 'POSTER_WORK' 'Working on poster' $n $MAX_POSTERS
-      #echo -ne "${RED}POSTERS     : ${NC}Now, working on poster ${YELLOW}$n${NC} of $MAX_POSTERS...\033[0K\r"
-      ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)";  if [ $(bc <<< "$ffmpeg_ssAt < 1.00") -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
-      ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" -frames:v 1 -q:v 2 -loglevel error "$_temp/_temp$n.png" -y
-      ffmpeg -i "$_temp/_tempbase.png" -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" -filter_complex "[1]crop=720:$ffprobe_height:in_w:in_h[still];[2]scale=-1:404[logo];[0][still]overlay=0:60[partial];[partial][logo]overlay=55:746" -q:v 5 -loglevel error "$_temp/poster$n.png" -y
-      rm -f "$_temp/_temp$n.png"
-    done  
-    rm -f "$_temp/_tempbase.mp4"; rm -f "$_temp/_tempbase.png"
+
+    idx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); 
+    teaser=${TEASERS[$idx]}
+    theme_colors=( $(shuf -e '068130|ffff00' 'cceb19|000000' '7d0a14|c2ffff' '063b81|ffffff' '881798|ffe97f' '5e0053|ffffff' 'c50f1f|FFB6ED' '000000|ffffff'  ) )  #teaser colors: rectamgle-background|text-foreground 
+    IFS="|" read -r themeBackColor themeTextColor  <<< "$theme_colors"    
+
+    if [[ $ffprobe_color_primaries == *"2020"* ]] && [[ $ffprobe_color_space == *"2020"* ]] &&  \
+      ( [[ $ffprobe_color_transfer != *"709"* ]] || [[ $ffprobe_color_transfer == *"601"* ]] ); then 
+      inHDR_overlay=",drawbox=x=0:y=(ih/1.96):w=(iw*0.29):h=(ih*0.062):color=white@0.5:thickness=fill, \
+                      drawtext=text='in HDR!':fontcolor=maroon:fontfile=SigmarOne-Regular':x=(w*0.02):y=(h/1.9):fontsize=(h*0.035):bordercolor=yellow:borderw=10"       
+    fi
+    ffmpeg_roundcorner="format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${poster_radius})*gt(abs(H/2-Y),H/2-${poster_radius}),if(lte(hypot(${poster_radius}-(W/2-abs(W/2-X)),${poster_radius}-(H/2-abs(H/2-Y))),${poster_radius}),255,0),255)'"
+
+    if [ $(echo "$ffprobe_height <= 1080" | bc ) ]; then logo_design=( $(shuf -e '1080p' '1080p' '1079p') ); fi	#odds 1 of 3 to wind design 1080p
+
+    case $logo_design in
+    '1080p')
+      dataset0=('x=20:y=25:w=680:h=50'   'SigmarOne-Regular' 'x=(w-text_w)/2:y=35:fontsize=h/28'   '55:680' )  #teasertop-logobottom (drawbox xy, fontname, font xysize, logo xy)
+      dataset1=('x=20:y=970:w=680:h=50'  'SigmarOne-Regular' 'x=(w-text_w)/2:y=980:fontsize=h/28'  '55:0'   )  #teaserbottom-logotop
+      dataset2=('x=20:y=1020:w=680:h=50' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=1030:fontsize=h/28' '55:620' )  #logo,teaser-bottom
+      datasetCollection=( $(shuf -e "dataset0" "dataset1" "dataset2" ) ) 
+      declare -n data="$datasetCollection"
+      teaser_overlay=",drawbox=${data[0]}:color='#$themeBackColor'@1:thickness=fill,drawtext=text='$teaser':fontcolor='#$themeTextColor':fontfile=${data[1]}:${data[2]}:bordercolor=yellow:borderw=2"
+		
+      for ((n=1; n<=$MAX_POSTERS; n++)); do
+        Process_Message_Feedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
+        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.10" | bc)";  
+        if [ $(echo "scale=2; $ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi #leading zero for _ssAt less than 1.00
+        ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
+               -filter_complex "crop=in_w/2:in_h,hue=s=2,$ffmpeg_roundcorner$teaser_overlay" \
+               -frames:v 1 -q:v 2 \
+               "$_temp/_temp$n.png" -y -loglevel error
+        ffmpeg -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" \
+               -filter_complex "[1]scale=-1:404[logo]; [0][logo]overlay=${data[3]}$inHDR_overlay" \
+               -q:v 2 \
+               "$_temp/poster$n.png" -y -loglevel error
+        rm -f "$_temp/_temp$n.png"
+      done ;;
+    '1079p')
+      dataset0=('55' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=10:fontsize=h/28'   '55:680' )  #teasertop-logobottom ('n/a', fontname, font xysize, logo xy)
+      dataset1=('40' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:0'   )  #teaserbottom-logotop
+      dataset2=('40' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:620' )  #logo,teaser-bottom
+      datasetCollection=( $(shuf -e "dataset0" "dataset1" "dataset2" ) ) 
+      declare -n data="$datasetCollection"                                                 #for debug: data=("${dataset2[@]}")
+      teaser_overlay=",drawtext=text='$teaser':fontcolor='#$themeTextColor':fontfile=${data[1]}:${data[2]}:bordercolor=yellow:borderw=2"
+
+      ffmpeg -f lavfi -i color=c=0x$themeBackColor:duration=1:s=720x1080:r=1 \
+             "$_temp/_tempbase.mp4" -y -loglevel error
+      ffmpeg -ss 0 -i "$_temp/_tempbase.mp4" \
+             -filter_complex "$ffmpeg_roundcorner$teaser_overlay" \
+             -frames:v 1 -q:v 1 \
+             "$_temp/_temproundteaser.png" -y -loglevel error; 
+
+      rm -f "$_temp/_tempbase.mp4";
+
+      for ((n=1; n<=$MAX_POSTERS; n++)); do
+        Process_Message_Feedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
+        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)";  
+		    if [ $(echo "scale=2;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
+        ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
+               -frames:v 1 -q:v 2 \
+               "$_temp/_temp$n.png" -y -loglevel error
+        ffmpeg -i "$_temp/_temproundteaser.png" -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" \
+               -filter_complex "[1]scale=-1:970,crop=720:970:160:in_h,drawbox=x=0:y=0:w=720:h=990:color=$themeBackColor@1:t=20[still]; \
+                                [2]scale=-1:404[logo]; \
+                                [0][still]overlay=0:${data[0]}[partial]; \
+                                [partial][logo]overlay=${data[3]}$inHDR_overlay" -q:v 1 \
+               "$_temp/poster$n.png" -y -loglevel error
+        rm -f "$_temp/_temp$n.png"
+      done
+      rm -f "$_temp/_temproundteaser.png" ;;
+    esac
     pick_a_poster=$((2 % $MAX_POSTERS))
-    mv "$_temp/poster$(echo "$pick_a_poster + 1" | bc).png" "${f%.*}/poster.png"
-    #echo -e "${RED}POSTERS     : ${NC}$(echo "$n-1" | bc) images created. Choose the best one between ${YELLOW}$(echo "$MAX_POSTERS - 1" | bc)${NC} located inside /_temp directory. ${RED}DONE!${NC}"
-    Process_Message_Feedback 'POSTER_DONE' $n ''
+    mv "$_temp/poster$(echo "$pick_a_poster + 1" | bc).png" "${f%.*}/Poster.png"    
+    Process_Message_Feedback 'POSTER_DONE' $n
 	fi
   #End Poster Images
-
 
 
   #Background Images Begin
@@ -346,10 +395,3 @@ done
 count=$(find "$1" -type f -name "*.jpg" | wc -l)
 echo -e "SUMMARY: At least ${count} images aand other assets were created to enhance the user viewing experience.\n\n" 
 #EOF
-#Inspiration: AskUbuntu-Iterate over files in directory, create folders based on file names and move files into respective folders
-
-#https://file-examples.com/wp-content/storage/2017/11/file_example_MP3_700KB.mp3  # nope!
-#https://download.samplelib.com/mp3/sample-6s.mp3  # nope!
-#https://pixabay.com/music/search/mood/relaxing/  #PIXABAY <button class="buttonBase--r4opq secondaryButton--xk9cO base--jzyee light--uBcBI" aria-label="Download">
-
-
