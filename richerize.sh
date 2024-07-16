@@ -1,6 +1,6 @@
 #!/bin/bash
-MAX_POSTERS=6
-MAX_BACKDROPS=4
+MAX_POSTERS=3
+MAX_BACKDROPS=2
 MPAAS=('TV-Y' 'APPROVED' 'TV-G' 'PG-13' 'PG-13' 'R' 'TV-MA')
 ACTORS=('Sara Hayek' 'Liza Taylor' 'Gina Close' 'Jimmy Chan' 'Lucho DiCaprio' 'Ant Banderas' 'Penelope Reyes')
 ROLES=('the guest star' 'the home princess' 'the queen been' 'the goofy' 'the bully' 'the car driver' 'the expert biker' 'the football coach' 'the neighbor' 'ice cream seller' 'the action hero' 'the aristocratic actor' 'the cat lady' 'the choosen one' 'the con arist' 'the damsel in distress' 'the latin lover' 'the bandido' 'the femme fatale' 'the figaro' 'the last standing' 'the folk hero' 'the jocker' 'the supernatural entity' 'the gypsy' 'the harlequin' 'the igor' 'the innocent' 'the knight-errant' 'the machiavelle' 'the eccentric' 'the dreamy' 'the attactive' 'the friendly villain' 'the diva' 'the legend' 'the noble prince' 'the mischievous' 'the preppy' 'the seductor' 'the schoolma`am' 'the impostor' 'the sidekick' 'the southern belle' 'the wise' 'the yuppie')
@@ -20,10 +20,70 @@ NC='\033[0m'
 poster_radius=40
 COUNTER=0;TOTAL_COUNTER=0
 
+#Functions Begin
+function Process_Pad () { [ "$#" -gt 1 ] && [ -n "$2" ] && printf "%$2.${2#-}s" "$1"; }
+function Process_Message_Feedback () {
+  case $1 in
+      'COPY_MOVE'      ) echo -ne "${RED}$2${NC} $3\n"; return 1 ;;
+  esac
+  echo -ne "\033[0K\r"    
+  case $1 in
+    'ERROR'          ) echo -ne "${RED}ERROR       : ${NC}$2 ${YELLOW}$3${NC}\n" ;;
+    'WORKING_ON'     ) echo -ne "${RED}("$2"of"$3")${NC} Working on ${YELLOW}"$4${NC}"..." ;;
+    'POSTER_START'   ) echo -ne "${YELLOW}POSTERS     : ${NC}Working on posters...\033[0K" ;;
+
+    'LOGO_WORK'      ) echo -ne "${YELLOW}LOGO        : ${NC}$2\033[0K" ;;
+    'POSTER_WORK'    ) echo -ne "${YELLOW}POSTERS     : ${NC}$2 ${YELLOW}$3${NC} of $4...\033[0K" ;;
+    'BACKGROUND_WORK') echo -ne "${YELLOW}BACKGROUNDS : ${NC}$2 ${YELLOW}$3${NC} of $4...\033[0K" ;;
+    'METAFILE_WORK'  ) echo -ne "${YELLOW}METAFILE    : ${NC}$2\033[0K" ;;
+    'THEME_WORK'     ) echo -ne "${YELLOW}THEME AUDIO : ${NC}$2\033[0K" ;;
+
+    'LOGO_DONE'      ) echo -ne "${RED}LOGO        : ${NC}Logo for the film and poster created.  ${RED}DONE!${NC}\n" ;;
+    'POSTER_DONE'    ) echo -ne "${RED}POSTERS     : ${YELLOW}$(echo "$n-1" | bc)${NC} image posters created. ${RED}DONE!${NC}. Other ${YELLOW}$(echo "$n-2" | bc)${NC} in /_temp directory maybe more appealing.\n" ;;
+    'BACKGROUND_DONE') echo -ne "${RED}BACKGROUNDS : ${YELLOW}$2${NC} background images created.  ${RED}DONE!${NC}\n" ;;
+    'METAFILE_DONE'  ) echo -ne "${RED}METAFILE    : ${NC}Metafile with extension nfo sucessfully created.  ${RED}DONE!${NC}\n" ;;
+    'THEME_DONE'     ) echo -ne "${RED}THEME AUDIO : ${NC}Thematic background audio file sucessfully created.  ${RED}DONE!${NC}\n" ;;
+    'TRAILERDONE'    ) echo -ne "${RED}TRAILER     : ${NC}Trailer video clip.  ${RED}DONE!${NC}\n" ;;
+    
+
+    'TRAILERS'       ) echo -ne "${YELLOW}TRAILER     : ${NC}Now, preparing trailer clip ${YELLOW}$2${NC} of $3...\033[0K" ;;
+    'BACKGROUNDS'    ) echo -ne "${YELLOW}BACKGROUNDS : ${NC}Now, preparing background images ${YELLOW}$2${NC} of $3...\033[0K" ;;
+                    *) echo -ne "${YELLOW}$(Process_Pad $1 -12): ${NC}$2$3\033[0K" ;;
+  esac
+}
+
+function Process_Chapter_File() {
+  rexpr_txtfile="^([0-9]):([0-5][0-9]):([0-5][0-9].[0-9][0-9])[[:space:]](.*)?" #h:mm:ss.ff Anytext
+  rexpr_ffprobe="^([0-9]):([0-5][0-9]):([0-5][0-9])(.*)?" #h:mm:ss.ff    
+  while IFS= read -r line; do
+    if [[ "$line" =~ $rexpr_txtfile ]]; then
+      local title="${BASH_REMATCH[4]}"
+      local timestamp=$(echo "($(echo "scale=2; ${BASH_REMATCH[3]} + $(($((${BASH_REMATCH[2]} + $((${BASH_REMATCH[1]} * 60)) )) * 60))" | bc )*1000)/1" | bc )
+      local chapter_lines+=("${BASH_REMATCH[1]}:${BASH_REMATCH[2]}:${BASH_REMATCH[3]} $title")
+      local pro_timestamp+=($timestamp)
+      local pro_title+=("$title") 
+    else
+      echo "ERROR CHAPTER: $line"
+    fi
+  done < "$2" 
+  if [[ $(ffprobe -v error -show_entries format=duration -of csv=p=0 -sexagesimal "$4") =~ $rexpr_ffprobe ]]; then
+    local pro_timestamp+=( $(echo "($(echo "scale=2; ${BASH_REMATCH[3]} + $(($((${BASH_REMATCH[2]} + $((${BASH_REMATCH[1]} * 60)) )) * 60))" | bc )*1000)/1" | bc ) )
+  fi
+  text=";FFMETADATA1\n# ${base_name[@]} chapter(s) --as ffmpeg metadata format.\n\n"
+  for ((i=0; i<${#pro_timestamp[@]} - 1; ++i)); do
+    text+="# ${chapter_lines[$i]}\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=${pro_timestamp[$i]}\nEND=$(bc <<<"${pro_timestamp[$i + 1]} - 1")\ntitle=${pro_title[$i]}\n\n"    
+  done      
+  ffmpeg_chapter_file=("${f%.*}/chapters.txt")
+  printf "$text" > "${ffmpeg_chapter_file[@]}"
+  ffmpeg -i "$1" -loglevel error -f ffmetadata -i "${ffmpeg_chapter_file[@]}" -c copy "$3"
+}
+#End Functions
+
+
 #Argument Validation Begin
 if [[ $(whoami) -ne "root" ]]; then echo -e "Execute script with root account privileges: ${YELLOW}su - ${NC}"; exit 0; fi
 if [[ -z ${@:1} ]] || [[ ${@:1} == -* ]]; then
-  echo -e "${RED}Missing argument. No directory name in the command line.${NC}"
+    'ERROR' 'Missing argument. No directory name in the command line.'
   echo -e "Example: ./richerize.sh ${YELLOW}MyDirectoryWithFiles${NC}"
   echo -e "Example: ./richerize.sh ${YELLOW}'My Other Directory With spaces in its name'${NC}\n"  
   exit 0
@@ -34,7 +94,7 @@ for f in "$1"/*; do
     old_f=$f; new_f=${f%.*}/$(basename -- "$f")
     let COUNTER++
 done
-if [ $COUNTER -eq 0 ]; then echo -e "${RED}Error:${NC} Missing directory or directory has no content ${YELLOW}$1${NC}.\n"; exit 0; fi
+if [ $COUNTER -eq 0 ]; then Process_Message_Feedback 'ERROR' 'Missing directory or directory has no content.' $1; exit 0; fi
 typed_arguments=${@:2}
 for i in ${typed_arguments[@]}; do
   if [[ " ${VALID_ARGUMENTS[*]} " =~ [[:space:]]${i,,}[[:space:]] ]]; then recognized_args+=("${i,,} "); fi
@@ -67,66 +127,44 @@ for f in "$1"/*; do
   new_f=${f%.*}/"$(basename -- "$f")"  #the new file absolute path
   ffmpeg_i=("$new_f")   	             #file names in array deals w/white spaces.
   new_f_array=("$new_f"); x1=${new_f_array[@]}; x2=${x1%.*}
-  base_name=${x2##*/}    
-  echo -e -n "${RED}("$COUNTER"of"$TOTAL_COUNTER")${NC} Working on ${YELLOW}"$(basename -- "$f")${NC}"..."
+  base_name=${x2##*/}
+  Process_Message_Feedback 'WORKING_ON' $COUNTER $TOTAL_COUNTER "$(basename -- "$f")"
   mkdir -p "${f%.*}" #new folder created!
-    #Begin Chapter Function
-    ffmpeg_f=("$f"); chapter_info=("${f%.*}.chapters.txt"); ffmpeg_i_with_chapters="${ffmpeg_i[@]}"
-    function_doProcessChapterFile() {
-      rexpr_txtfile="^([0-9]):([0-5][0-9]):([0-5][0-9].[0-9][0-9])[[:space:]](.*)?" #h:mm:ss.ff Anytext
-      rexpr_ffprobe="^([0-9]):([0-5][0-9]):([0-5][0-9])(.*)?" #h:mm:ss.ff    
-      while IFS= read -r line; do
-        if [[ "$line" =~ $rexpr_txtfile ]]; then
-          local title="${BASH_REMATCH[4]}"
-          local timestamp=$(echo "($(echo "scale=2; ${BASH_REMATCH[3]} + $(($((${BASH_REMATCH[2]} + $((${BASH_REMATCH[1]} * 60)) )) * 60))" | bc )*1000)/1" | bc )
-          local chapter_lines+=("${BASH_REMATCH[1]}:${BASH_REMATCH[2]}:${BASH_REMATCH[3]} $title")
-          local pro_timestamp+=($timestamp)
-          local pro_title+=("$title") 
-        else
-          echo "ERROR CHAPTER: $line"
-        fi
-      done < "${chapter_info[@]}" 
-      if [[ $(ffprobe -v error -show_entries format=duration -of csv=p=0 -sexagesimal "${ffmpeg_f[@]}") =~ $rexpr_ffprobe ]]; then
-        local pro_timestamp+=( $(echo "($(echo "scale=2; ${BASH_REMATCH[3]} + $(($((${BASH_REMATCH[2]} + $((${BASH_REMATCH[1]} * 60)) )) * 60))" | bc )*1000)/1" | bc ) )
-      fi
-      text=";FFMETADATA1\n# ${base_name[@]} chapter(s) --as ffmpeg metadata format.\n\n"
-      for ((i=0; i<${#pro_timestamp[@]} - 1; ++i)); do
-        text+="# ${chapter_lines[$i]}\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=${pro_timestamp[$i]}\nEND=$(bc <<<"${pro_timestamp[$i + 1]} - 1")\ntitle=${pro_title[$i]}\n\n"    
-      done      
-      ffmpeg_chapter_file=("${f%.*}/chapters.txt")
-      printf "$text" > "${ffmpeg_chapter_file[@]}"
-      ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "${ffmpeg_chapter_file[@]}" -c copy "$ffmpeg_i_with_chapters"
-    }
-    #Chapter Function End
+
+
+
+
+  ffmpeg_f=("$f"); chapter_info=("${f%.*}.chapters.txt"); ffmpeg_i_with_chapters="${ffmpeg_i[@]}"
   if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
     if [ -f "${chapter_info[@]}" ]; then  #chapter file exist, we need to work on it
       echo -e -n " Processing chapter..." 
-      function_doProcessChapterFile
-      #ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "${chapter_info[@]}"  -c copy "$ffmpeg_i_with_chapters"
-      echo -e "${RED}COPIED WITH CHAPTER DATA!${NC}"
+      Process_Chapter_File "$ffmpeg_f" "$chapter_info" "$ffmpeg_i_with_chapters" "${ffmpeg_f[@]}"
+      Process_Message_Feedback 'COPY_MOVE' 'COPIED!  ' 'Chapter data created in the process.'
+      #echo -e "${RED}COPIED WITH CHAPTER DATA!${NC}"
     else   
       cp -a "$f" "${f%.*}/"
-      echo -e "${RED}COPIED!${NC}"
+      Process_Message_Feedback 'COPY_MOVE' 'COPIED!'
+      #echo -e "${RED}COPIED!${NC}"
     fi
   else
     if [ -f "${chapter_info[@]}" ]; then
+      Process_Chapter_File "$ffmpeg_f" "$chapter_info" "$ffmpeg_i_with_chapters" "${ffmpeg_f[@]}"
       echo -e -n " Processing chapter..." 
-      function_doProcessChapterFile
       #ffmpeg -i "$ffmpeg_f" -loglevel error -f ffmetadata -i "$chapter_info" -c copy "$ffmpeg_i_with_chapters"  #ffmpeg do not move files.
       sleep 5;
-    rm "$f"        
-      echo -e "${RED}MOVED WITH CHAPTER DATA!${NC}"     
+      rm "$f"        
+      Process_Message_Feedback 'COPY_MOVE' 'MOVED! ' 'With chapter data created in the process.'      
     else 
       mv "$f" "${f%.*}/" 
-      echo -e "${RED}MOVED!${NC}"
+      Process_Message_Feedback 'COPY_MOVE' 'MOVED!'
     fi
   fi
   #Move File(s) and Chapterize End
 
   #Begin File Profile
   eval $(ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=codec_name,width,height,display_aspect_ratio,pix_fmt,color_range,color_primaries,color_space,color_transfer,r_frame_rate,nb_read_packets -of flat=s=_ "${ffmpeg_i[@]}")
-  ffprobe_height=$streams_stream_0_height
   ffprobe_width=$streams_stream_0_width
+  ffprobe_height=$streams_stream_0_height  
   ffprobe_codec_name=$streams_stream_0_codec_name             #h264
   ffprobe_pix_fmt=$streams_stream_0_pix_fmt                   #yuv420p
   ffprobe_color_range=$streams_stream_0_color_range           #tv
@@ -137,13 +175,14 @@ for f in "$1"/*; do
   ffprobe_frame_rate="$(echo "scale=0; $streams_stream_0_r_frame_rate*1" | bc )"
   ffprobe_frames=$streams_stream_0_nb_read_packets
   ffprobe_duration=$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "${ffmpeg_i[@]}")
-  echo -e "${RED}PROFILE     :${NC} $ffprobe_height"x"$ffprobe_width"p" $ffprobe_aspect_ratio, $ffprobe_codec_name, $ffprobe_duration"secs w/$ffprobe_frames frames, $ffprobe_frame_rate"fps"
-  echo -e "              Colors: $ffprobe_color_range $ffprobe_pix_fmt $ffprobe_color_primaries/$ffprobe_color_space/$ffprobe_color_transfer (primary/matrix/transfer)"
+  echo -e "${RED}METADATA    :${NC} $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs w/$ffprobe_frames frames @$ffprobe_frame_rate"fps"
+  echo -e "              Colors: $ffprobe_color_range-$ffprobe_pix_fmt-$ffprobe_color_primaries/$ffprobe_color_space/$ffprobe_color_transfer (primary/matrix coefficients/transfer characteristics)"
   #File Profile End
 
   #Logo Image Begin
   if [[ ! "${typed_arguments,,}" == *"-nologo"* ]]; then
-    echo -e -n "${RED}LOGO        :${NC} Designing a unique logo...\033[0K\r"  
+    Process_Message_Feedback 'LOGO_WORK' 'Designing a unique logo..'
+    #echo -e -n "${RED}LOGO        :${NC} Designing a unique logo...\033[0K\r"  
     font_color=( $(shuf -e "white" "yellow" "orange" "turquoise" "green") )
     border_color=( $(shuf -e "red" "black" "blue" "magenta") )
     font_family=( $(shuf -e "DejaVuSans-Bold.ttf" "DejaVuSans-Bold.ttf" "DejaVuSans-Bold.ttf" "DejaVuSerif-Bold.ttf" "DejaVuSansMono-Bold.ttf") )
@@ -155,13 +194,14 @@ for f in "$1"/*; do
     done
     ffmpeg -i "${ffmpeg_i[@]}" -filter_complex "[0:0]crop=2:2:0:0[img];color=c=0xffffff@0x00:s=310x202,format=rgba,drawtext=textfile='${f%.*}/title.txt':fontfile=$font_family:fontcolor=$font_color:fontsize=60:bordercolor=$border_color:borderw=4:x=(w-text_w)/2:y=(h-text_h)/2[bg];[bg][img]overlay=0:0:format=rgb,format=rgba[out]" -map [out] -c:v png -frames:v 1 -loglevel error "${f%.*}/Clearlogo.png" -y
     rm "${f%.*}/title.txt"
-    echo -e "A logo image has been created. ${RED}DONE!${NC}           "
+    Process_Message_Feedback 'LOGO_DONE'
+    #echo -e "A logo image has been created. ${RED}DONE!${NC}           "
   fi
   #End Logo Image
 
   #Poster Images Begin
   if [[ ! "${typed_arguments,,}" == *"-noposter"* ]]; then
-    _temp="${f%.*}/_temp"; mkdir -p $_temp; 
+    _temp="${f%.*}/_temp"; mkdir -p "$_temp"
     if [[ $ffprobe_color_primaries == *"2020"* ]] && [[ $ffprobe_color_space == *"2020"* ]] &&  ( [[ $ffprobe_color_transfer != *"709"* ]] || [[ $ffprobe_color_transfer == *"601"* ]] ); then quality=" in HDR"; fi
     idx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); teaser=${TEASERS[$idx]}
     theme_bg_color=( $(shuf -e '068130' 'cceb19' '7d0a14' '063b81' '881798' '5e0053' 'c50f1f') )
@@ -171,7 +211,8 @@ for f in "$1"/*; do
     ffmpeg -ss 0 -i "$_temp/_tempbase.mp4" -filter_complex "$ffmpeg_rounded$ffmpeg_drawbox" -frames:v 1 -q:v 5 -loglevel error "$_temp/_tempbase.png" -y
     
     for ((n=1; n<=$MAX_POSTERS; n++)); do
-      echo -ne "${RED}POSTERS     : ${NC}Now, working on poster ${YELLOW}$n${NC} of $MAX_POSTERS...\033[0K\r"
+      Process_Message_Feedback 'POSTER_WORK' 'Working on poster' $n $MAX_POSTERS
+      #echo -ne "${RED}POSTERS     : ${NC}Now, working on poster ${YELLOW}$n${NC} of $MAX_POSTERS...\033[0K\r"
       ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)";  if [ $(bc <<< "$ffmpeg_ssAt < 1.00") -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
       ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" -frames:v 1 -q:v 2 -loglevel error "$_temp/_temp$n.png" -y
       ffmpeg -i "$_temp/_tempbase.png" -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" -filter_complex "[1]crop=720:$ffprobe_height:in_w:in_h[still];[2]scale=-1:404[logo];[0][still]overlay=0:60[partial];[partial][logo]overlay=55:746" -q:v 5 -loglevel error "$_temp/poster$n.png" -y
@@ -180,7 +221,8 @@ for f in "$1"/*; do
     rm -f "$_temp/_tempbase.mp4"; rm -f "$_temp/_tempbase.png"
     pick_a_poster=$((2 % $MAX_POSTERS))
     mv "$_temp/poster$(echo "$pick_a_poster + 1" | bc).png" "${f%.*}/poster.png"
-    echo -e "${RED}POSTERS     : ${NC}$(echo "$n-1" | bc) images created. Choose the best one between ${YELLOW}$(echo "$MAX_POSTERS - 1" | bc)${NC} located inside /_temp directory. ${RED}DONE!${NC}"
+    #echo -e "${RED}POSTERS     : ${NC}$(echo "$n-1" | bc) images created. Choose the best one between ${YELLOW}$(echo "$MAX_POSTERS - 1" | bc)${NC} located inside /_temp directory. ${RED}DONE!${NC}"
+    Process_Message_Feedback 'POSTER_DONE' $n ''
 	fi
   #End Poster Images
 
@@ -201,17 +243,20 @@ for f in "$1"/*; do
     fi
     ffmpeg_eqRandom=( $(shuf -e $eqR $eqG $eqB $eqC $eqM $eqV $eqY $eqT $eqS $eqP $eqG2 $eqK) ) 
     for ((n=1; n<=$MAX_BACKDROPS; n++)); do
-      echo -ne "${RED}BACKDROPS   : ${NC}Now, working on backdrop ${YELLOW}$n${NC} of $MAX_BACKDROPS...\033[0K\r"
+      Process_Message_Feedback 'BACKGROUND_WORK' 'Working on background image' $n $MAX_BACKDROPS
+      #echo -ne "${RED}BACKDROPS   : ${NC}Now, working on backdrop ${YELLOW}$n${NC} of $MAX_BACKDROPS...\033[0K\r"
       ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_BACKDROPS*$n)-0.1" | bc)";  if [ $(bc <<< "$ffmpeg_ssAt < 1.00") -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
       ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" -vf "${ffmpeg_eqRandom[$n]},scale=2160:-1" -vframes 1 -q:v 2 -loglevel error "${f%.*}/backdrop$n.jpg" -y
     done
-    echo -e "${RED}BACKDROPS   : ${NC}$n images created. ${RED}DONE!${NC}           "
+    Process_Message_Feedback 'BACKGROUND_DONE' $n
+    #echo -e "${RED}BACKDROPS   : ${NC}$n images created. ${RED}DONE!${NC}           "
   fi
   #End Background Images
 
   #Begin Metadata
   if [[ ! "${typed_arguments,,}" == *"-nometa"* ]]; then 
-    echo -e -n "${RED}METAFILE    :${NC} Now the editable metadata file..."
+    Process_Message_Feedback 'METAFILE_WORK' 'Now the editable metadata file...'
+    #echo -e -n "${RED}METAFILE    :${NC} Now the editable metadata file..."
 
     default_plot="<![CDATA[Enjoy '${streams_stream_0_nb_frames}' frames of awesome content in '${format_duration}' of duration.]]>"
     if [ ! -f  "$1/plots.txt" ]; then
@@ -273,19 +318,22 @@ for f in "$1"/*; do
   <tag>${SEARCH_TAGS[${tag[$COUNTER+1]}]}</tag>
   $trailer_element
 </movie>" > "${f%.*}/${base_name[@]}"'.nfo'
-    echo -e "${RED}DONE!${NC}"
+    Process_Message_Feedback 'METAFILE_DONE'
+    #echo -e "${RED}DONE!${NC}"
   fi
   #End Metadata
 
   #Background Audio Begin
   if [[ ! "${typed_arguments,,}" == *"-nomusic"* ]] && [ $COUNTER -lt 6 ]; then
-    echo -e -n "${RED}THEME MUSIC :${NC} Creating theme song (limited to 5)..."  
+    Process_Message_Feedback 'THEME_WORK' ' Creating theme song (limited to 5)...'
+    #echo -e -n "${RED}THEME AUDIO :${NC} Creating theme song (limited to 5)..."  
     output_file="$1"/${base_name[@]}"/theme.mp3"   #"Rich Demo/Cancun Family Trip/theme.mp3"  
     source_url='https://filesamples.com/samples/audio/mp3/sample'$COUNTER'.mp3'  
     curl -o "$output_file" $source_url -s      
-    echo -e "${RED}DONE!${NC}\n"
+    Process_Message_Feedback 'THEME_DONE'
+    #echo -e "${RED}DONE!${NC}\n"
   else
-    echo -e "${RED}THEME MUSIC :${NC} ...${RED}SKIPPED!${NC}\n"  
+    echo -e "${RED}THEME AUDIO :${NC} ...${RED}SKIPPED!${NC}\n"  
   fi
   #End Background Audio
 
