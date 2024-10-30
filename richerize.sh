@@ -8,10 +8,10 @@ GENRES=('Thriller' 'Action' 'Reality' 'Adventure' 'Fiction' 'Suspense' 'Comedy d
 STUDIOS=('Metro Golden Meyer' '20th Century Fox' 'Marvel Universe' 'Hanna-Barbera Studios' 'DreamWorks Animation' 'Paramount Pictures' 'Universal Pictures' 'Columbia Pictures' 'Warner Bros. Studios' 'Sony Picture Studios')
 SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets' 'park' 'city' 'lake' 'snow' 'river')
 TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q' 'CwXOrWvPBPk' '-UaGUdNJdRQ' 'eTjHiQKJUDY' 'CZ1CATNbXg0' '1XHf94YqGyQ' 'xBgSfhp5Fxo' 'GUvk7NNmB64' 'HKH7_n425Ss' 'JFsGn_JwzCc' 'sJCjKQQOqT0' '9oQ628Seb9w' 'glPzcdMX5wI' 'CGbgaHoapFM' 'DFTIL0ciHik' 'xNWSGRD5CzU' 'mE35XQFxbeo' '5iB82S8rHyg' '_MoIr7811Bs' '_MoIr7811Bs' 'siLm9q4WIjI' '9OAC55UWAQs' 'G2z-xAZRFcQ' 'WYTE2_W2O00' 'ie53R2HEZ6g' 'orAqhC-Hp_o' 'Wlo-sYrADlw' 'TQhRqtt-Fpo' 'Su7g8JVY0xI' '1sD4qkCymtI' 'kkrGBlvGK4I' 'HLw7pSXJe64' 'HlNRVZ871os' 'GV5y4yTDtBI' 'RFeNB8IlPlc' 'eRNPQmk6wLU' '4ffrsBbrrQU' 'O6i3lyx1I_g' 'Njf8U5SnM4w' 'M0vnBeHeuzs' 'i4noiCRJRoE' 'pfESEXIZ_lw' 'JX6btxoFhI8' 'eTjDsENDZ6s' '-agq5R3b43U' 'Vngk9Wp9bGk' 'vZIY2-kH-wE' '8IBNZ6O2kMk' 'ZS_8btMjx2U' 'SPHfeNgogVs' 'qCKdkbsMUA8' 'sED6FRXIHJc' 'lFzVJEksoDY' '-qCPMP4mNcQ' 'usEkWtuNn-w' 'SyYESEvDNIg' 'hAGzq5jLCEk' '2BkVf2voCr0')
-TEASERS=('Famby Original Collection' 'Streaming Now' 'Streaming Everywhere' 'Only at Famby' 'Available As We Speak!' 'On A SmartTV Near You!' 'Famby Exclusive!' 'Now Playing Everywhere')
-#Do not modify below this line
-GUI_ACCENTCOLOR1='6BEE36'  #6BEE36=LightGreen@Emby, LightPurle@Jellyfin, LightYellow@Plex
-GUI_ACCENTCOLOR2='1FAF55'  #1FAF55=DarkGreen@Emby , DarkPurple@Jellyfin, DarkYellow@Plex
+TEASERS=('Famby Original Collection' 'Streaming Now' 'Streaming Everywhere' 'Only at Famby' 'Instantly Available Here!' 'On A SmartTV Near You!' 'Famby Exclusive!' 'Now Playing Everywhere')
+#A Message for the End User: Do not modify below this line
+GUI_ACCENTCOLOR1='ffffff'  #52B54B=LightGreen@Emby, A25FC4=Purle@Jellyfin, LightYellow@Plex
+GUI_ACCENTCOLOR2='1FAF55'  #1FAF55=DarkGreen@Emby , 007EA8=Blue@Jellyfin, DarkYellow@Plex
 SUPPORTED_EXT=("mkv" "mp4" "avi")
 VALID_ARGUMENTS=( -noposter -noback -nologo -nometa -nomusic -notrailer -dorgb -docopy)
 YELLOW='\033[1;33m'
@@ -77,75 +77,92 @@ function ProcedureCreateChapterFile() {
 }
 
 function ProcedureFilenameToLinesArray() {
-    logo_text="$1"
-    #INPUT  : The video file name without the extension (accepts text sentences)
-    #OUTPUT : $lines_array  (the file name organized as a maximun of 4 lines)
-    #PURPOSE: Create a transparent image 310x202pixels horizontally divided in 2 tops of one-third (~66px) each and 2 bottoms of one-quarter (~35px) each.
-    #         Characters per line limited to 20.  Lines limited to 4.  Lines 3 and 4 will be truncated if the $logo_text lenght exceeds this sizee.
-    #STEP 1): Analyze input text, count words and --if present, groups of words enclosed in special chaacters
-    reg_expr_array=(); period=""; delimiter=""; 
-    reg_expr_exclam3='.*?,[[:blank:]](.+?)\!'; reg_expr_exclam2='.*?,(.+?)\!'; reg_expr_exclam1='(?<=).*(?=!)'; reg_expr_latinexclam='.*?¡(.+?)!'; 
-    reg_expr_question3='.*?,[[:blank:]](.+?)\?'; reg_expr_question2='.*?,(.+?)\?'; reg_expr_question1='(?<=).*(?=?)'; reg_expr_latinquestion='.*?¿(.+?)\?'; 
-    reg_expr_parenthesis='.*?\((.+?)\)'; reg_expr_bracket='.*?\[(.+?)\]'; reg_expr_singlequotes="'(.*?)'"; reg_expr_bracket='.*?\[(.+?)\]';
-    if [[ $logo_text =~ $reg_expr_bracket ]]; then reg_expr_array+=("]|$reg_expr_bracket|bracket"); fi
-    if [[ $logo_text =~ $reg_expr_parenthesis ]]; then reg_expr_array+=(")|$reg_expr_parenthesis|parenthesis"); fi
-    if [[ $logo_text =~ $reg_expr_singlequotes ]]; then reg_expr_array+=("'|$reg_expr_singlequotes|singlequotes"); fi
-    if [[ $logo_text =~ $reg_expr_latinexclam ]]; then  reg_expr_array+=("!|$reg_expr_latinexclam|latinexclam"); 
-    elif [[ $logo_text =~ $reg_expr_exclam3 ]]; then reg_expr_array+=("!|$reg_expr_exclam3|exclam3")
-    elif [[ $logo_text =~ $reg_expr_exclam2 ]]; then reg_expr_array+=("!|$reg_expr_exclam2|exclam2")
-    elif [[ $logo_text =~ $reg_expr_exclam1 ]]; then reg_expr_array+=("!|$reg_expr_exclam1|exclam1"); fi
-    if [[ $logo_text =~ $reg_expr_latinquestion ]]; then  reg_expr_array+=("?|$reg_expr_latinquestion|latimexclam");
-    elif [[ $logo_text =~ $reg_expr_question3 ]]; then reg_expr_array+=("?|$reg_expr_question3|question3")
-    elif [[ $logo_text =~ $reg_expr_question2 ]]; then reg_expr_array+=("?|$reg_expr_question2|question2")
-    elif [[ $logo_text =~ $reg_expr_question1 ]]; then reg_expr_array+=("?|$reg_expr_question1|question1"); fi
-    for reg_expr in "${reg_expr_array[@]}"; do 
-      IFS="|" read -r delimiter reg_expr whendebug <<< "${reg_expr}"
-      if [[ $logo_text =~ $reg_expr ]]; then #echo -n "whendebug=$whendebug "
-        enclosed="${BASH_REMATCH[1]}$delimiter"
-        filler=$(seq -s■ $((20 - ${#enclosed} ))|tr -d '[:digit:]')
-        logo_text=${logo_text/$enclosed/${enclosed//$' '/$'▀'}$filler} #read: on $logo_text, find $enclosed and replace by the filler stuff
-      fi
-    done
-    #STEP 2): Regroup the words.  First 2 lines with more emphasis hopefully will result in biggfer fonst size.  Remaining 2 small font size
-    IFS=' ' read -ra words_array <<< "$logo_text"
-    for (( i=0; i <= ${#words_array[@]} - 1; i++ )); do words_array[i]=${words_array[$i]//[■]/$''}; done  #; echo -n "${#words_array[$i]} "
-    lines_array=(); unset lines_array[@]; i=0; line_index=0; 
-    while [ $i -lt ${#words_array[@]} ]; do
-      n1=${#words_array[i]}; n2=0; if [ ${#words_array[i + 1]} ]; then n2=${#words_array[i + 1]}; fi
-      criteria=8; if [[ $line_index -ge 1 ]]; then criteria=2; fi
-      if [[ $line_index -le 2 ]]; then 
-        if [[ $n1 -le 3 ]] && [[ $n2 -ge $criteria ]] && [[ $(( $n1 + $n2 )) -le 20 ]]; then #Emphasis on first 2 words (L-size Outstanding title)
-            lines_array[$line_index]="${words_array[i]}"▀"${words_array[i + 1]}"; let i++  #these 2 words are in one line, jump to i+1
-        else lines_array[$line_index]=${words_array[i]}; fi       #condition above did'nt meet, continue
-      else lines_array[3]+="${words_array[i]}▀"; fi #keep adding everything else to last line #4
-      let line_index++; let i++
-    done  #at this moment we have final lines_arrays. Next step replace  some fillers
-    for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]=${lines_array[$i]//[▀]/$' '}; done 
-    for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]=${lines_array[$i]//[:]/$'\:'}; done 
+  logo_text="$1"
+  #INPUT  : The video file name without the extension (accepts text sentences)
+  #OUTPUT : $lines_array  (the file name organized as a maximun of 4 lines)
+  #PURPOSE: Create a transparent image 310x202pixels horizontally divided in 2 tops of one-third (~66px) each and 2 bottoms of one-quarter (~35px) each.
+  #         Characters per line limited to 20.  Lines limited to 4.  Lines 3 and 4 will be truncated if the $logo_text lenght exceeds this sizee.
+  #STEP 1): Analyze input text, count words, check for spaces and capital letters and --if present, groups of words enclosed in special characters
+  if [[ ! ${logo_text:0:19} =~ [[:space:]] ]]; then  #filename has no spaces in the first 20 chars.
+    if [[ ${logo_text:0:19} =~ [A-Z] ]]; then        #filename has no spaces, but words can be segregated by inital capital letter
+      logo_text=$(echo "${logo_text:0:19}${logo_text:19:${#logo_text}}" | sed 's/[A-Z]/ &/g')
+    else                                              #filename has no spaces nor capital letter in the first 20 chars (this is worst case for title/logo design).
+      line_index=0; length=${#logo_text}
+      while [ $line_index -lt $length ] && [ $line_index -le 17 ]; do
+        str+=${logo_text:$line_index:6}" "
+        let line_index="$line_index + 6"
+      done
+      str+=${logo_text:$line_index:${#logo_text}}  #this is the 4th line which contains all remaining chars
+      logo_text=$str
+    fi
+  fi
+  logo_text=$(echo "$logo_text" | sed -r 's/[-_]+/ /g' )
+  reg_expr_array=(); delimiter=""; 
+  reg_expr_exclam3='.*?,[[:blank:]](.+?)\!'; reg_expr_exclam2='.*?,(.+?)\!'; reg_expr_exclam1='(?<=).*(?=!)'; reg_expr_latinexclam='.*?¡(.+?)!'; 
+  reg_expr_question3='.*?,[[:blank:]](.+?)\?'; reg_expr_question2='.*?,(.+?)\?'; reg_expr_question1='(?<=).*(?=?)'; reg_expr_latinquestion='.*?¿(.+?)\?'; 
+  reg_expr_parenthesis='.*?\((.+?)\)'; reg_expr_bracket='.*?\[(.+?)\]'; reg_expr_singlequotes="'(.*?)'"; reg_expr_bracket='.*?\[(.+?)\]';
+  if [[ $logo_text =~ $reg_expr_bracket ]]; then reg_expr_array+=("]|$reg_expr_bracket|bracket"); fi
+  if [[ $logo_text =~ $reg_expr_parenthesis ]]; then reg_expr_array+=(")|$reg_expr_parenthesis|parenthesis"); fi
+  if [[ $logo_text =~ $reg_expr_singlequotes ]]; then reg_expr_array+=("'|$reg_expr_singlequotes|singlequotes"); fi
+  if [[ $logo_text =~ $reg_expr_latinexclam ]]; then  reg_expr_array+=("!|$reg_expr_latinexclam|latinexclam"); 
+  elif [[ $logo_text =~ $reg_expr_exclam3 ]]; then reg_expr_array+=("!|$reg_expr_exclam3|exclam3")
+  elif [[ $logo_text =~ $reg_expr_exclam2 ]]; then reg_expr_array+=("!|$reg_expr_exclam2|exclam2")
+  elif [[ $logo_text =~ $reg_expr_exclam1 ]]; then reg_expr_array+=("!|$reg_expr_exclam1|exclam1"); fi
+  if [[ $logo_text =~ $reg_expr_latinquestion ]]; then  reg_expr_array+=("?|$reg_expr_latinquestion|latimexclam");
+  elif [[ $logo_text =~ $reg_expr_question3 ]]; then reg_expr_array+=("?|$reg_expr_question3|question3")
+  elif [[ $logo_text =~ $reg_expr_question2 ]]; then reg_expr_array+=("?|$reg_expr_question2|question2")
+  elif [[ $logo_text =~ $reg_expr_question1 ]]; then reg_expr_array+=("?|$reg_expr_question1|question1"); fi
+  for reg_expr in "${reg_expr_array[@]}"; do 
+    IFS="|" read -r delimiter reg_expr whendebug <<< "${reg_expr}"
+    if [[ $logo_text =~ $reg_expr ]]; then #echo -n "whendebug=$whendebug "
+      enclosed="${BASH_REMATCH[1]}$delimiter"
+      filler=$(seq -s■ $((20 - ${#enclosed} ))|tr -d '[:digit:]')
+      logo_text=${logo_text/$enclosed/${enclosed//$' '/$'▀'}$filler} #read: on $logo_text, find $enclosed and replace by the filler stuff
+    fi
+  done
 
-    #STEP 3): Attempt to make the output lines prettier
-    if [[ ${#lines_array[@]} -eq 1 ]]; then #Make ACRONYM from 3 first words
-        first_letters=""; remove_for_acronym="[(-,[¡¿\']" 
-        input=${lines_array[0]//$remove_for_acronym/$''}" "${lines_array[1]//$remove_for_acronym/$''}" "${lines_array[2]//$remove_for_acronym/$''}
-        for word in $input; do word=${word^^}; first_letters+="${word:0:1}"; done
-        for (( i=${#lines_array[@]}; i >=0 ; i-- )); do lines_array[i]=${lines_array[$i - 1]}; done 
-        lines_array[0]=$first_letters"\:"
-    fi
-    if [[ ! ${logo_text//[^ ]} ]] && [[ ${#logo_text} -gt 20 ]] ; then #no spaces on input $logo_text (file name), Do the best!
-      lines_array[0]=${logo_text:0:5};
-      if [[ ${#logo_text} -ge 5 ]]; then lines_array[1]=${logo_text:5:5}; fi; 
-      if [[ ${#logo_text} -ge 10 ]]; then lines_array[2]=${logo_text:10:10}; fi; 
-      if [[ ${#logo_text} -ge 20 ]]; then lines_array[3]=${logo_text:20:$(( ${#lines_array} - 10 ))}; fi; 
-    fi
-    case ${#lines_array[@]} in
-      "1") lines_array[2]=$(seq -s▀ $((${#lines_array[0]} + 1))|tr -d '[:digit:]') ;;
-      "2") lines_array[3]=$(seq -s… $((${#lines_array[1]} + 1))|tr -d '[:digit:]') ;;
-      "3") lines_array[4]=$(seq -s─ $((${#lines_array[2]} + 1))|tr -d '[:digit:]') ;;
-    esac
-    #for (( i=0; i <= 3; i++ )); do #replace character 19 by ellipsis when line exceeds 20
-    #  if [[ ${#lines_array[i]} -gt 20 ]]; then lines_array[$i]=${lines_array[$i]:0:19}'…'; fi
-    #done
-    #return exit 0
+  #STEP 2): Regroup the words.  First 2 lines with more emphasis (less max chars=bigger fontsize)
+  IFS=' ' read -ra words_array <<< "$logo_text"
+  for (( i=0; i <= ${#words_array[@]} - 1; i++ )); do words_array[i]=${words_array[$i]//[■]/$''}; done  #; echo -n "${#words_array[$i]} "
+  n1=${#words_array[i]}; n2=0; if [ ${#words_array[i + 1]} ]; then n2=${#words_array[i + 1]}; fi
+  n3=${#words_array[i+2]}; n3=0; if [ ${#words_array[i + 3]} ]; then n4=${#words_array[i + 3]}; fi  
+  lines_array=(); unset lines_array[@]; i=0; line_index=0;   
+  while [ $i -lt ${#words_array[@]} ]; do    
+    if [[ $line_index -le 2 ]]; then 
+      if [[ $(( $n1 + $n2 )) -le 9 ]]; then
+          lines_array[$line_index]="${words_array[i]}"▀"${words_array[i + 1]}"; let i++  #these 2 words are in one line, jump to i+1
+      else 
+        lines_array[$line_index]=${words_array[i]}; 
+      fi
+      if [[ $line_index -ge 3 ]]; then
+        if [[ $(( $n3 + $n4 )) -le 14 ]]; then
+          lines_array[$line_index]="${words_array[i]}"▀"${words_array[i + 3]}"; let i++  #these 2 words are in one line, jump to i+1
+        else 
+          lines_array[$line_index]=${words_array[i]}; 
+        fi
+      fi
+    else 
+      lines_array[3]+="${words_array[i]}▀"; 
+    fi #keep adding everything else to last line #4
+    let line_index++; let i++
+  done  #at this moment we have final lines_arrays. Next step replace some fillers
+  for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]=${lines_array[$i]//[▀]/$' '}; done 
+  for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]=${lines_array[$i]//[:]/$'\:'}; done 
+
+  #STEP 3): Attempt to make the output lines prettier
+  if [[ ${#lines_array[@]} -eq 1 ]]; then #Make ACRONYM from 3 first words
+      first_letters=""; remove_for_acronym="[(-,[¡¿\']" 
+      input=${lines_array[0]//$remove_for_acronym/$''}" "${lines_array[1]//$remove_for_acronym/$''}" "${lines_array[2]//$remove_for_acronym/$''}
+      for word in $input; do word=${word^^}; first_letters+="${word:0:1}"; done
+      for (( i=${#lines_array[@]}; i >=0 ; i-- )); do lines_array[i]=${lines_array[$i - 1]}; done 
+      lines_array[0]=$first_letters"\:"
+  fi
+  case ${#lines_array[@]} in
+    "1") lines_array[2]=$(seq -s▀ $((${#lines_array[0]} + 1))|tr -d '[:digit:]') ;;
+    "2") lines_array[3]=$(seq -s… $((${#lines_array[1]} + 1))|tr -d '[:digit:]') ;;
+    "3") lines_array[4]=$(seq -s─ $((${#lines_array[2]} + 1))|tr -d '[:digit:]') ;;
+  esac
+
 }
 #End Functions
 
@@ -268,35 +285,36 @@ for f in "$1"/*; do
     ffmpeg -f lavfi -i "color=c=0xffffff@0x00:s=310x202:duration=1,format=rgba" "$placeholderImage" -y -loglevel panic    
 
     #Hint: ('RelativeSize-SML#AllCaps?' 'Fontname'   'charCount|fontSize|pixelHeight' )
-    dataset00=('L#'  'MouseMemoirs'   '0|0|0' '1|78|68'  '2|78|68' '3|78|68' '4|78|68' '5|78|68'  '6|88|84'  '7|86|82' '8|64|62' '9|68|68' '10|70|64' '11|72|72' '12|72|70' '13|70|68' '14|68|64' '15|64|62' '16|58|50' '17|58|50' '18|54|50' '19|50|48' '20|42|42')
-    dataset01=('L#'  'Ranchers'       '0|0|0' '1|78|68'  '2|78|68' '3|74|68' '4|64|68' '5|64|68'  '6|58|60'  '7|58|60' '8|54|60' '9|58|64' '10|48|50' '11|46|50' '12|48|50' '13|46|50' '14|46|50' '15|44|48' '16|36|42' '17|38|42' '18|36|40' '19|32|38' '20|32|38')
-    dataset02=('L#'  'Jersey 25'      '0|0|0' '1|102|68' '2|98|68' '3|94|68' '4|90|68' '5|140|68' '6|90|68'  '7|88|68' '8|86|68' '9|82|68' '10|74|68' '11|64|50' '12|56|46' '13|54|42' '14|52|44' '15|50|44' '16|46|40' '17|40|38' '18|38|34' '19|34|33' '20|34|33')
-    dataset03=('M#'  'Darumadrop One' '0|0|0' '1|104|68' '2|98|68' '3|96|68' '4|92|68' '5|100|68' '6|100|68' '7|78|50' '8|74|50' '9|70|50' '10|62|50' '11|58|50' '12|50|48' '13|44|38' '14|44|42' '15|44|40' '16|38|38' '17|36|34' '18|34|30' '19|30|28' '20|30|28')
-    dataset04=('S#'  'Archivo Black'  '0|0|0' '1|90|68'  '2|88|68' '3|84|68' '4|84|68' '5|84|68'  '6|80|68'  '7|64|50' '8|64|50' '9|64|50' '10|50|50' '11|46|48' '12|40|44' '13|36|36' '14|34|34' '15|34|36' '16|32|32' '17|30|28' '18|28|26' '19|26|26' '20|22|24')
-    dataset05=('M#'  'Slackey'        '0|0|0' '1|80|68'  '2|86|68' '3|84|68' '4|80|68' '5|80|68'  '6|68|68'  '7|62|68' '8|52|50' '9|50|48' '10|42|42' '11|44|48' '12|40|46' '13|32|30' '14|32|34' '15|30|28' '16|28|28' '17|30|28' '18|28|28' '19|26|28' '20|22|26')
-    dataset06=('S#'  'Chewy'          '0|0|0' '1|84|68'  '2|84|68' '3|82|68' '4|84|68' '5|82|68'  '6|68|50'  '7|60|50' '8|58|50' '9|60|50' '10|60|50' '11|60|50' '12|58|50' '13|48|50' '14|46|50' '15|44|50' '16|40|46' '17|28|36' '18|30|36' '19|30|36' '20|30|36')
-    dataset07=('S#C' 'Bungee'         '0|0|0' '1|90|68'  '2|88|68' '3|86|68' '4|88|68' '5|84|68'  '6|68|68'  '7|60|48' '8|54|46' '9|48|40' '10|46|40' '11|42|36' '12|38|34' '13|36|36' '14|32|28' '15|32|32' '16|30|32' '17|28|32' '18|28|30' '19|22|24' '20|22|24')
-    dataset08=('M#C' 'pixeldead'      '0|0|0' '1|88|68'  '2|88|68' '3|88|68' '4|88|68' '5|88|68'  '6|82|78'  '7|72|58' '8|62|50' '9|60|50' '10|56|50' '11|48|42' '12|44|42' '13|42|38' '14|38|36' '15|36|36' '16|34|32' '17|36|36' '18|34|34' '19|30|30' '20|26|26')
-    dataset09=('X#C' 'Nosifer'        '0|0|0' '1|90|68'  '2|86|68' '3|88|68' '4|86|68' '5|54|50'  '6|52|50'  '7|46|50' '8|48|46' '9|38|40' '10|34|36' '11|32|32' '12|28|34' '13|28|32' '14|26|26' '15|24|26' '16|22|24' '17|22|24' '18|22|24' '19|20|22' '20|16|20')
-    dataset10=('M#C' 'arco'           '0|0|0' '1|86|68'  '2|86|68' '3|84|68' '4|82|68' '5|80|66'  '6|70|50'  '7|54|50' '8|52|48' '9|50|46' '10|42|38' '11|40|36' '12|36|34' '13|34|32' '14|30|26' '15|30|26' '16|28|26' '17|30|26' '18|28|26' '19|26|26' '20|24|26')
-    dataset11=('M#C' 'Sigmar One'     '0|0|0' '1|84|68'  '2|84|68' '3|84|68' '4|84|68' '5|84|68'  '6|68|50'  '7|54|48' '8|52|46' '9|48|40' '10|44|38' '11|42|38' '12|38|36' '13|32|30' '14|30|28' '15|30|28' '16|28|28' '17|30|28' '18|28|28' '19|24|24' '20|22|20')
-    dataset12=('M#C' 'Trade Winds'    '0|0|0' '1|82|68'  '2|80|68' '3|80|68' '4|82|68' '5|76|68'  '6|72|68'  '7|62|64' '8|60|50' '9|58|50' '10|54|50' '11|48|48' '12|44|46' '13|38|44' '14|38|40' '15|36|36' '16|34|34' '17|32|36' '18|30|30' '19|28|28' '20|26|26')
+    dataset00=('S#'  'Oswald'         '0|0|0' '1|80|82'  '2|80|82' '3|74|76' '4|74|76' '5|60|62'  '6|60|62'  '7|64|64' '8|58|60' '9|58|62' '10|58|62' '11|60|62' '12|58|62' '13|52|54' '14|50|50' '15|48|50' '16|44|48' '17|28|37' '18|28|37' '19|28|37' '20|30|37')
+    dataset01=('L#'  'MouseMemoirs'   '0|0|0' '1|78|68'  '2|78|68' '3|78|68' '4|78|68' '5|78|68'  '6|88|84'  '7|86|82' '8|64|62' '9|68|68' '10|70|64' '11|72|72' '12|72|70' '13|70|68' '14|68|64' '15|64|62' '16|58|50' '17|58|50' '18|54|50' '19|50|48' '20|42|42')
+    dataset02=('L#'  'Ranchers'       '0|0|0' '1|78|68'  '2|78|68' '3|74|68' '4|64|68' '5|64|68'  '6|58|60'  '7|58|60' '8|54|60' '9|58|64' '10|48|50' '11|46|50' '12|48|50' '13|46|50' '14|46|50' '15|44|48' '16|36|42' '17|38|42' '18|36|40' '19|32|38' '20|32|38')
+    dataset03=('L#'  'Jersey 25'      '0|0|0' '1|102|68' '2|98|68' '3|94|68' '4|90|68' '5|140|68' '6|90|68'  '7|88|68' '8|86|68' '9|82|68' '10|74|68' '11|64|50' '12|56|46' '13|54|42' '14|52|44' '15|50|44' '16|46|40' '17|40|38' '18|38|34' '19|34|33' '20|34|33')
+    dataset04=('M#'  'Darumadrop One' '0|0|0' '1|104|68' '2|98|68' '3|96|68' '4|92|68' '5|100|68' '6|100|68' '7|78|50' '8|74|50' '9|70|50' '10|62|50' '11|58|50' '12|50|48' '13|44|38' '14|44|42' '15|44|40' '16|38|38' '17|36|34' '18|34|30' '19|30|28' '20|30|28')
+    dataset05=('S#'  'Archivo Black'  '0|0|0' '1|90|68'  '2|88|68' '3|84|68' '4|84|68' '5|84|68'  '6|80|68'  '7|64|50' '8|64|50' '9|64|50' '10|50|50' '11|46|48' '12|40|44' '13|36|36' '14|34|34' '15|34|36' '16|32|32' '17|30|28' '18|28|26' '19|26|26' '20|22|24')
+    dataset06=('M#'  'Slackey'        '0|0|0' '1|80|68'  '2|86|68' '3|84|68' '4|80|68' '5|80|68'  '6|68|68'  '7|62|68' '8|52|50' '9|50|48' '10|42|42' '11|44|48' '12|40|46' '13|32|30' '14|32|34' '15|30|28' '16|28|28' '17|30|28' '18|28|28' '19|26|28' '20|22|26')
+    dataset07=('S#'  'Chewy'          '0|0|0' '1|84|68'  '2|84|68' '3|82|68' '4|84|68' '5|82|68'  '6|68|50'  '7|60|50' '8|58|50' '9|60|50' '10|60|50' '11|60|50' '12|58|50' '13|48|50' '14|46|50' '15|44|50' '16|40|46' '17|28|36' '18|30|36' '19|30|36' '20|30|36')
+    dataset50=('S#C' 'Bungee'         '0|0|0' '1|90|68'  '2|88|68' '3|86|68' '4|88|68' '5|84|68'  '6|68|68'  '7|60|48' '8|54|46' '9|48|40' '10|46|40' '11|42|36' '12|38|34' '13|36|36' '14|32|28' '15|32|32' '16|30|32' '17|28|32' '18|28|30' '19|22|24' '20|22|24')
+    dataset51=('M#C' 'pixeldead'      '0|0|0' '1|88|68'  '2|88|68' '3|88|68' '4|88|68' '5|88|68'  '6|82|78'  '7|72|58' '8|62|50' '9|60|50' '10|56|50' '11|48|42' '12|44|42' '13|42|38' '14|38|36' '15|36|36' '16|34|32' '17|36|36' '18|34|34' '19|30|30' '20|26|26')
+    dataset52=('X#C' 'Nosifer'        '0|0|0' '1|90|68'  '2|86|68' '3|88|68' '4|86|68' '5|54|50'  '6|52|50'  '7|46|50' '8|48|46' '9|38|40' '10|34|36' '11|32|32' '12|28|34' '13|28|32' '14|26|26' '15|24|26' '16|22|24' '17|22|24' '18|22|24' '19|20|22' '20|16|20')
+    dataset53=('M#C' 'arco'           '0|0|0' '1|86|68'  '2|86|68' '3|84|68' '4|82|68' '5|80|66'  '6|70|50'  '7|54|50' '8|52|48' '9|50|46' '10|42|38' '11|40|36' '12|36|34' '13|34|32' '14|30|26' '15|30|26' '16|28|26' '17|30|26' '18|28|26' '19|26|26' '20|24|26')
+    dataset54=('M#C' 'Sigmar One'     '0|0|0' '1|84|68'  '2|84|68' '3|84|68' '4|84|68' '5|84|68'  '6|68|50'  '7|54|48' '8|52|46' '9|48|40' '10|44|38' '11|42|38' '12|38|36' '13|32|30' '14|30|28' '15|30|28' '16|28|28' '17|30|28' '18|28|28' '19|24|24' '20|22|20')
+    dataset55=('M#C' 'Trade Winds'    '0|0|0' '1|82|68'  '2|80|68' '3|80|68' '4|82|68' '5|76|68'  '6|72|68'  '7|62|64' '8|60|50' '9|58|50' '10|54|50' '11|48|48' '12|44|46' '13|38|44' '14|38|40' '15|36|36' '16|34|34' '17|32|36' '18|30|30' '19|28|28' '20|26|26')
 
     justification=( $(shuf -e "1" "(w-text_w)/2" ) )
-    flag_fontSet=0
+    flag_fontSet=0  
     for (( i=0; i < ${#lines_array[@]}; i++ )); do
       if [ $i -eq 0 ]; then  #AllCaps fonts
-        datasetCollection=( $(shuf -e "dataset08" "dataset09" "dataset10" "dataset11" "dataset12" ) );
+        datasetCollection=( $(shuf -e "dataset50" "dataset51" "dataset52" "dataset53" "dataset54" "dataset55" ) );
         for sets in "${datasetCollection[0]}"; do declare -n fontData="$sets"; done
         fontColor=$color2; fontBorderColor=$color3
-        flag_fontSet=( $(shuf -e 0 1 1) )
+        flag_fontSet=( $(shuf -e 0 0 0 0 1 1) )
       fi
 
       if [ $flag_fontSet -eq 0 ] && [ $i -gt 0 ]; then
-        datasetCollection=( $(shuf -e "dataset00" "dataset01" "dataset02" "dataset03" "dataset04" "dataset05" "dataset06" ) )
+        datasetCollection=( $(shuf -e "dataset00" "dataset01" "dataset02" "dataset03" "dataset04" "dataset05" "dataset06" "dataset07" ) )
         for sets in "${datasetCollection[1]}"; do declare -n fontData="$sets"; done
         fontColor=$color3; fontBorderColor=$color4
-        flag_fontSet=( $(shuf -e 0 1 1) )
+        flag_fontSet=( $(shuf -e 0 1 1 1) )
       fi 
 
       if [[ ${#lines_array[$i]} -gt 20 ]]; then  #the film title exceeds 20 char lenght.
@@ -321,7 +339,9 @@ for f in "$1"/*; do
             fi 
             if [[ ${#lines_array[$i]} -gt 20 ]]; then justification="1"; fi ;; 
       esac
-      #4Debug: echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixelHeight",            ["${lines_array[$i]}"]"
+
+echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixelHeight",            ["${lines_array[$i]}"]"   #4Debug
+            
       ffmpeg -i "$placeholderImage" \
              -filter_complex "[0:0]crop=2:2:in_w:in_h[img];color=c=0xffffff@0x00:s=310x202,format=rgba \
                              ,drawtext=text='${lines_array[$i]}':fontfile=$fontName:fontcolor=$fontColor:fontsize=$fontSize:bordercolor=$fontBorderColor:borderw=1:shadowx=3:shadowy=3:x=$justification:y=$y_offset[bg]; \
@@ -375,22 +395,22 @@ for f in "$1"/*; do
     inHDR_overlay=""
     if [[ $dynamicRange == *"HDR"* ]]; then
       inHDR_overlay=",drawbox=x=0:y=(ih/1.96):w=(iw*0.29):h=(ih*0.062):color=white@0.5:thickness=fill, \
-                      drawtext=text='in HDR!':fontcolor=$GUI_ACCENTCOLOR2:fontfile='$fontNameInHDR':x=(w*0.02):y=(h/1.9):fontsize=(h*0.035):bordercolor='$GUI_ACCENTCOLOR1':borderw=6"
+                      drawtext=text='in HDR!':fontcolor=$GUI_ACCENTCOLOR1:fontfile='$fontNameInHDR':x=(w*0.02):y=(h/1.9):fontsize=(h*0.035):bordercolor='$GUI_ACCENTCOLOR2':borderw=6"
     fi
     ffmpeg_roundcorner="format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${poster_radius})*gt(abs(H/2-Y),H/2-${poster_radius}),if(lte(hypot(${poster_radius}-(W/2-abs(W/2-X)),${poster_radius}-(H/2-abs(H/2-Y))),${poster_radius}),255,0),255)'"
 
     if [[ $ffprobe_height -ge 1080 ]]; then
-      logo_design='1080p'; 
+      logo_design=( $(shuf -e '1080p-design1' '1080p-design2') ); 
     elif [[ $ffprobe_height -gt 720 ]] && [[ $ffprobe_height -le 1079 ]]; then
-      logo_design=( $(shuf -e '1080p' '1080p' '1079p') )
+      logo_design=( $(shuf -e '1080p-design1' '1080p-design2' '1079p') )
     else
       logo_design='1079p'
     fi
     case $logo_design in
-    '1080p')
-      dataset0=('x=20:y=25:w=680:h=50'   'SigmarOne-Regular' 'x=(w-text_w)/2:y=35:fontsize=h/28'   '55:680' )  #teasertop-logobottom (drawbox xy, fontname, font xysize, logo xy)
-      dataset1=('x=20:y=970:w=680:h=50'  'SigmarOne-Regular' 'x=(w-text_w)/2:y=980:fontsize=h/28'  '55:0'   )  #teaserbottom-logotop
-      dataset2=('x=20:y=1020:w=680:h=50' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=1030:fontsize=h/28' '55:620' )  #logo,teaser-bottom
+    '1080p-design1')
+      dataset0=('x=20:y=25:w=680:h=50'   'Oswald' 'x=(w-text_w)/2:y=35:fontsize=h/28'   '55:680' )  #teasertop-clearlogobottom-->(drawbox:y:h, fontname, positionx:y:fontsize, clearlogoposx:y)
+      dataset1=('x=20:y=970:w=680:h=50'  'Oswald' 'x=(w-text_w)/2:y=980:fontsize=h/28'  '55:0'   )  #teaserbottom-clearlogotop
+      dataset2=('x=20:y=1020:w=680:h=50' 'Oswald' 'x=(w-text_w)/2:y=1030:fontsize=h/28' '55:620' )  #clearlogo&teaser-bottom
       datasetCollection=( $(shuf -e "dataset0" "dataset1" "dataset2" ) ) 
       declare -n teaserData="$datasetCollection"
       teaser_overlay=",drawbox=${teaserData[0]}:color='$colorPosterBg'@1:thickness=fill,drawtext=text='$teaser':fontcolor='$GUI_ACCENTCOLOR1':fontfile=${teaserData[1]}:${teaserData[2]}:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
@@ -409,12 +429,36 @@ for f in "$1"/*; do
                "$_temp/poster$n.png" -y -loglevel error
         rm -f "$_temp/_temp$n.png"
       done ;;
+    '1080p-design2')
+      teaser_overlay=",drawtext=text='$teaser':fontcolor='$GUI_ACCENTCOLOR1':fontfile='Oswald':x=(w-text_w)/2:y=1035:fontsize=h/28:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
+      ffmpeg -f lavfi -i color=c=0x$colorPosterBg:duration=1:s=720x1080:r=1 \
+             "$_temp/_tempbase.mp4" -y -loglevel error
+      ffmpeg -ss 0 -i "$_temp/_tempbase.mp4" \
+             -filter_complex "$ffmpeg_roundcorner$teaser_overlay" \
+             -frames:v 1 -q:v 1 \
+             "$_temp/_temproundteaser.png" -y -loglevel error; 
+      rm -f "$_temp/_tempbase.mp4"
+      for ((n=1; n<=$MAX_POSTERS; n++)); do
+        ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
+        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)";  
+		    if [ $(echo "scale=2;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
+        ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
+               -frames:v 1 -q:v 2 \
+               "$_temp/_temp$n.png" -y -loglevel error
+        ffmpeg -i "$_temp/_temproundteaser.png" -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" \
+               -filter_complex "[1]scale=-1:660,eq=brightness=0.2:contrast=1:saturation=1.5,crop=740:660:160:(in_h)[still]; \
+                                [2]scale=-1:404[logo]; \
+                                [0][still]overlay=-1:360[partial]; \
+                                [partial][logo]overlay=55:10$inHDR_overlay" -q:v 1 \
+               "$_temp/poster$n.png" -y -loglevel error
+        rm -f "$_temp/_temp$n.png"
+      done ;;      
     '1079p') 
-      dataset0=('55' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=10:fontsize=h/28'   '55:680' )  #teasertop-logobottom ('n/a', fontname, font xysize, logo xy)
-      dataset1=('40' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:0'   )  #teaserbottom-logotop
-      dataset2=('40' 'SigmarOne-Regular' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:620' )  #logo,teaser-bottom
+      dataset0=('55' 'Oswald' 'x=(w-text_w)/2:y=10:fontsize=h/28'   '55:680' )  #teasertop-clearlogobottom-->('n/a', fontname, positionx:y:fontsize, clearlogoposx:y)
+      dataset1=('40' 'Oswald' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:0'   )  #clearlogotop-teaserbottom
+      dataset2=('40' 'Oswald' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:620' )  #clearlogo&teaser-bottom
       datasetCollection=( $(shuf -e "dataset0" "dataset1" "dataset2" ) ) 
-      declare -n teaserData="$datasetCollection"                                           #for debug: teaserData=("${dataset2[@]}")
+      declare -n teaserData="$datasetCollection"                                #for debug: teaserData=("${dataset2[@]}")
       teaser_overlay=",drawtext=text='$teaser':fontcolor='$GUI_ACCENTCOLOR1':fontfile=${teaserData[1]}:${teaserData[2]}:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
 
       ffmpeg -f lavfi -i color=c=0x$colorPosterBg:duration=1:s=720x1080:r=1 \
@@ -423,11 +467,11 @@ for f in "$1"/*; do
              -filter_complex "$ffmpeg_roundcorner$teaser_overlay" \
              -frames:v 1 -q:v 1 \
              "$_temp/_temproundteaser.png" -y -loglevel error; 
-      rm -f "$_temp/_tempbase.mp4";
+      rm -f "$_temp/_tempbase.mp4"
 
       for ((n=1; n<=$MAX_POSTERS; n++)); do
         ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
-        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)";  
+        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)"
 		    if [ $(echo "scale=2;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
         ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
                -frames:v 1 -q:v 2 \
@@ -438,7 +482,7 @@ for f in "$1"/*; do
                                 [0][still]overlay=0:${teaserData[0]}[partial]; \
                                 [partial][logo]overlay=${teaserData[3]}$inHDR_overlay" -q:v 1 \
                "$_temp/poster$n.png" -y -loglevel error
-        rm -f "$_temp/_temp$n.png"
+		    rm -f "$_temp/_temp$n.png"
       done
       rm -f "$_temp/_temproundteaser.png" ;;
     esac
