@@ -1,13 +1,25 @@
 #!/bin/bash
 MAX_POSTERS=3
 MAX_BACKDROPS=2
+INHDR_TEXT='En  HDR!'
 ACTORS=('Sara Hayek' 'Liza Taylor' 'Gina Close' 'Jimmy Chan' 'Lucho DiCaprio' 'Ant Banderas' 'Penelope Reyes')
-ROLES=('the guest star' 'the home princess' 'the queen been' 'the goofy' 'the bully' 'the car driver' 'the expert biker' 'the football coach' 'the neighbor' 'ice cream seller' 'the action hero' 'the aristocratic actor' 'the cat lady' 'the choosen one' 'the con arist' 'the damsel in distress' 'the latin lover' 'the bandido' 'the femme fatale' 'the figaro' 'the last standing' 'the folk hero' 'the jocker' 'the supernatural entity' 'the gypsy' 'the harlequin' 'the igor' 'the innocent' 'the knight-errant' 'the machiavelle' 'the eccentric' 'the dreamy' 'the attactive' 'the friendly villain' 'the diva' 'the legend' 'the noble prince' 'the mischievous' 'the preppy' 'the seductor' 'the schoolma`am' 'the impostor' 'the sidekick' 'the southern belle' 'the wise' 'the yuppie')
+ROLES=('the guest star' 'the home princess' 'the queen been' 'the goofy' 'the bully' 'the car driver' 'the expert biker'\
+       'the football coach' 'the neighbor' 'ice cream seller' 'the action hero' 'the aristocratic actor' 'the cat lady' 'the choosen one'\
+       'the con arist' 'the damsel in distress' 'the latin lover' 'the bandido' 'the femme fatale' 'the figaro' 'the last standing' 'the folk hero'\
+       'the jocker' 'the supernatural entity' 'the gypsy' 'the harlequin' 'the igor' 'the innocent' 'the knight-errant' 'the machiavelle' 'the eccentric'\
+       'the dreamy' 'the attactive' 'the friendly villain' 'the diva' 'the legend' 'the noble prince' 'the mischievous' 'the preppy' 'the seductor' 'the schoolma`am'\
+       'the impostor' 'the sidekick' 'the southern belle' 'the wise' 'the yuppie')
 DIRECTORS=('Dhina Marca' 'Elmher Curio' 'Steban Dido' 'Elba Lazo' 'Elma Montt' 'Mario Neta' 'Yola Prieto')
-GENRES=('Thriller' 'Action' 'Reality' 'Adventure' 'Fiction' 'Suspense' 'Comedy drama' 'Family drama' 'Romance' 'Drama' 'Comedy' 'Mystery' 'Soap opera' 'Documentary' 'Sports' )
-STUDIOS=('Metro Golden Meyer' '20th Century Fox' 'Marvel Universe' 'Hanna-Barbera Studios' 'DreamWorks Animation' 'Paramount Pictures' 'Universal Pictures' 'Columbia Pictures' 'Warner Bros. Studios' 'Sony Picture Studios')
+GENRES=('Thriller' 'Action' 'Reality' 'Adventure' 'Fiction' 'Suspense' 'Comedy-drama' 'Family-drama' 'Romance' 'Drama' 'Comedy' 'Mystery' 'Soap-opera' 'Family-Documentary' 'Sports' )
+STUDIOS=('Meyer Metro Cooper' '21th Century Dog' 'Marvin Universe' 'Hannah-Barbara Entertainment' 'Dream Animation Pictures' 'Paramount Works' 'Universal Universe' 'Columbia Studios'\
+         'Warm Brothers Films' 'Sonic Entertainment')
 SEARCH_TAGS=('Birthday' 'Beach' 'Dancing' 'Streets' 'park' 'city' 'lake' 'snow' 'river')
-TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q' 'CwXOrWvPBPk' '-UaGUdNJdRQ' 'eTjHiQKJUDY' 'CZ1CATNbXg0' '1XHf94YqGyQ' 'xBgSfhp5Fxo' 'GUvk7NNmB64' 'HKH7_n425Ss' 'JFsGn_JwzCc' 'sJCjKQQOqT0' '9oQ628Seb9w' 'glPzcdMX5wI' 'CGbgaHoapFM' 'DFTIL0ciHik' 'xNWSGRD5CzU' 'mE35XQFxbeo' '5iB82S8rHyg' '_MoIr7811Bs' '_MoIr7811Bs' 'siLm9q4WIjI' '9OAC55UWAQs' 'G2z-xAZRFcQ' 'WYTE2_W2O00' 'ie53R2HEZ6g' 'orAqhC-Hp_o' 'Wlo-sYrADlw' 'TQhRqtt-Fpo' 'Su7g8JVY0xI' '1sD4qkCymtI' 'kkrGBlvGK4I' 'HLw7pSXJe64' 'HlNRVZ871os' 'GV5y4yTDtBI' 'RFeNB8IlPlc' 'eRNPQmk6wLU' '4ffrsBbrrQU' 'O6i3lyx1I_g' 'Njf8U5SnM4w' 'M0vnBeHeuzs' 'i4noiCRJRoE' 'pfESEXIZ_lw' 'JX6btxoFhI8' 'eTjDsENDZ6s' '-agq5R3b43U' 'Vngk9Wp9bGk' 'vZIY2-kH-wE' '8IBNZ6O2kMk' 'ZS_8btMjx2U' 'SPHfeNgogVs' 'qCKdkbsMUA8' 'sED6FRXIHJc' 'lFzVJEksoDY' '-qCPMP4mNcQ' 'usEkWtuNn-w' 'SyYESEvDNIg' 'hAGzq5jLCEk' '2BkVf2voCr0')
+TRAILER_IDS=('v-PjgYDrg70' 'iurbZwxKFUE' 'hu9bERy7XGY' 'G2gO5Br6r_4' 'un7a-i6pTS4' '-xjqxtt18Ys' 'LAr8SrBkDTI' 'vZnBR4SDIEs' 'mfw2JSDXUjE' 'CxwTLktovTU' 'eHcZlPpNt0Q' 'CwXOrWvPBPk'\
+             '-UaGUdNJdRQ' 'eTjHiQKJUDY' 'CZ1CATNbXg0' '1XHf94YqGyQ' 'xBgSfhp5Fxo' 'GUvk7NNmB64' 'HKH7_n425Ss' 'JFsGn_JwzCc' 'sJCjKQQOqT0' '9oQ628Seb9w' 'glPzcdMX5wI' 'CGbgaHoapFM'\
+             'DFTIL0ciHik' 'xNWSGRD5CzU' 'mE35XQFxbeo' '5iB82S8rHyg' '_MoIr7811Bs' '_MoIr7811Bs' 'siLm9q4WIjI' '9OAC55UWAQs' 'G2z-xAZRFcQ' 'WYTE2_W2O00' 'ie53R2HEZ6g' 'orAqhC-Hp_o'\
+             'Wlo-sYrADlw' 'TQhRqtt-Fpo' 'Su7g8JVY0xI' '1sD4qkCymtI' 'kkrGBlvGK4I' 'HLw7pSXJe64' 'HlNRVZ871os' 'GV5y4yTDtBI' 'RFeNB8IlPlc' 'eRNPQmk6wLU' '4ffrsBbrrQU' 'O6i3lyx1I_g'\
+             'Njf8U5SnM4w' 'M0vnBeHeuzs' 'i4noiCRJRoE' 'pfESEXIZ_lw' 'JX6btxoFhI8' 'eTjDsENDZ6s' '-agq5R3b43U' 'Vngk9Wp9bGk' 'vZIY2-kH-wE' '8IBNZ6O2kMk' 'ZS_8btMjx2U' 'SPHfeNgogVs'\
+             'qCKdkbsMUA8' 'sED6FRXIHJc' 'lFzVJEksoDY' '-qCPMP4mNcQ' 'usEkWtuNn-w' 'SyYESEvDNIg' 'hAGzq5jLCEk' '2BkVf2voCr0')
 TEASERS=('Famby Original Collection' 'Streaming Now' 'Streaming Everywhere' 'Only at Famby' 'Instantly Available Here!' 'On A SmartTV Near You!' 'Famby Exclusive!' 'Now Playing Everywhere')
 #A Message for the End User: Do not modify below this line
 GUI_ACCENTCOLOR1='ffffff'  #52B54B=LightGreen@Emby, A25FC4=Purle@Jellyfin, LightYellow@Plex
@@ -74,6 +86,22 @@ function ProcedureCreateChapterFile() {
   ffmpeg_chapter_file=("${f%.*}/chapters.txt")
   printf "$text" > "${ffmpeg_chapter_file[@]}"
   ffmpeg -i "$1" -loglevel error -f ffmetadata -i "${ffmpeg_chapter_file[@]}" -c copy "$3"
+}
+
+function ProcedureRgbTo_ffmpeg_eq () {
+  #INPUT  : rgb(125, 28, 20) Poster image expressed in RGB values --not Hex
+  #OUTPUT : ffmpeg_eq variable: eq=gamma_r=1.25:gamma_g=0.28:gamma_b=0.20  
+  rgbValues="$1";  reg_expr_parenthesis='.*?\((.+?)\)';
+  if [[ $rgbValues =~ ${reg_expr_parenthesis} ]]; then 
+    rgbValues="${BASH_REMATCH[1]}"
+    IFS="," read -r valueR valueG valueB <<< "${rgbValues}"
+    valueR=$(printf "%.2f\n" $(echo "scale=2; $valueR/100" | bc ) )
+    valueG=$(printf "%.2f\n" $(echo "scale=2; $valueG/100" | bc ) )
+    valueB=$(printf "%.2f\n" $(echo "scale=2; $valueB/100" | bc ) )
+    ffmpeg_eq="eq=gamma_r=$valueR:gamma_g=$valueG:gamma_b=$valueB:gamma_weight=1"         
+  else
+    ffmpeg_eq=$rgbValues
+  fi
 }
 
 function ProcedureFilenameToLinesArray() {
@@ -148,6 +176,7 @@ function ProcedureFilenameToLinesArray() {
   done  #at this moment we have final lines_arrays. Next step replace some fillers
   for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]=${lines_array[$i]//[▀]/$' '}; done 
   for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]=${lines_array[$i]//[:]/$'\:'}; done 
+  for (( i=0; i < ${#lines_array[@]}; i++ )); do lines_array[i]="${lines_array[i]%"${lines_array[i]##*[![:space:]]}"}"; done 
 
   #STEP 3): Attempt to make the output lines prettier
   if [[ ${#lines_array[@]} -eq 1 ]]; then #Make ACRONYM from 3 first words
@@ -157,12 +186,11 @@ function ProcedureFilenameToLinesArray() {
       for (( i=${#lines_array[@]}; i >=0 ; i-- )); do lines_array[i]=${lines_array[$i - 1]}; done 
       lines_array[0]=$first_letters"\:"
   fi
-  case ${#lines_array[@]} in
-    "1") lines_array[2]=$(seq -s▀ $((${#lines_array[0]} + 1))|tr -d '[:digit:]') ;;
-    "2") lines_array[3]=$(seq -s… $((${#lines_array[1]} + 1))|tr -d '[:digit:]') ;;
-    "3") lines_array[4]=$(seq -s─ $((${#lines_array[2]} + 1))|tr -d '[:digit:]') ;;
-  esac
-
+  #case ${#lines_array[@]} in
+  #  "1") lines_array+=( $(seq -s▀ $((${#lines_array[0]} + 1))|tr -d '[:digit:]') ) ;;
+  #  "2") lines_array+=( $(seq -s▀ $((${#lines_array[1]} + 1))|tr -d '[:digit:]') ) ;;
+  #  "3") lines_array+=( $(seq -s… $((${#lines_array[2]} + 1))|tr -d '[:digit:]') ) ;;
+  #esac
 }
 #End Functions
 
@@ -206,6 +234,8 @@ read
 #Richerize Process Begin
 COUNTER=1
 for f in "$1"/*; do
+  logger=(); unset logger[@]; expansionExpressionReplaceSpacewComma="${recognized_args[@]// /,}"; expansionExpressionReplaceSpacewComma=${recognized_args[@]/%/ ,}0
+  logger+=("COMMAND_ARGUMENTS: $expansionExpressionReplaceSpacewComma")  #IFS=, echo "${recognized_args[@]}"
 
   #Begin Move File and Chapterize(s)
   [ -d "$f" ] && continue; 
@@ -215,19 +245,19 @@ for f in "$1"/*; do
   ffmpeg_i=("$new_f")                   #file names in array deals w/white spaces.
   new_f_array=("$new_f"); x1=${new_f_array[@]}; x2=${x1%.*}
   base_name=${x2##*/}
-  ProcedureEchoFeedback 'WORKING_ON' $COUNTER $TOTAL_COUNTER "$(basename -- "$f")"
+  ProcedureEchoFeedback 'WORKING_ON' $COUNTER $TOTAL_COUNTER "$(basename -- "$f")";  logger+=("WORKING_ON ${f%.*} ($COUNTER OF $TOTAL_COUNTER)")
   mkdir -p "${f%.*}"
 
   ffmpeg_f=("$f"); chapter_info=("${f%.*}.chapters.txt"); ffmpeg_i_with_chapters="${ffmpeg_i[@]}"
   if [[ "${typed_arguments,,}" == *"-docopy"* ]]; then 
     if [ -f "${chapter_info[@]}" ]; then          #chapter file exist, we need to work on it
-      echo -e -n " Processing chapter..." 
+      echo -e -n " Processing chapter..."
       ProcedureCreateChapterFile "$ffmpeg_f" "$chapter_info" "$ffmpeg_i_with_chapters" "${ffmpeg_f[@]}"
       ProcedureEchoFeedback 'COPY_MOVE' 'COPIED!' 'Chapters created in the process.'
+      logger+=("File copied and Chapters created in the process.")
     else
       cp -a "$f" "${f%.*}/"
       ProcedureEchoFeedback 'COPY_MOVE' 'COPIED!'
-      #echo -e "${RED}COPIED!${NC}"
     fi
   else
     if [ -f "${chapter_info[@]}" ]; then
@@ -235,7 +265,8 @@ for f in "$1"/*; do
       ProcedureCreateChapterFile "$ffmpeg_f" "$chapter_info" "$ffmpeg_i_with_chapters" "${ffmpeg_f[@]}"
       sleep 5;
       rm "$f"
-      ProcedureEchoFeedback 'COPY_MOVE' 'MOVED!' 'With chapters created in the process.'
+      ProcedureEchoFeedback 'COPY_MOVE' 'MOVED!' 'With chapters created in the process.'  
+      logger+=("File moved and Chapters created in the process.")
     else
       mv "$f" "${f%.*}/"
       ProcedureEchoFeedback 'COPY_MOVE' 'MOVED!'
@@ -263,93 +294,121 @@ for f in "$1"/*; do
   fi
   classificationLetter=( $(shuf -e 'G' 'PG' 'PG-13' 'R' 'G' 'NR' 'PG-13' 'PG'))
   echo -e "${RED}METADATA    :${NC} $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs w/$ffprobe_frames frames @$ffprobe_frame_rate"fps $dynamicRange. Not $classificationLetter"
+  logger+=("METADATA: $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs_w/$ffprobe_frames_frames,@$ffprobe_frame_rate"fps $dynamicRange. Not $classificationLetter")
   #File Profile End
 
   #Begin Coordinating Color Palette for use in Logo and Poster(s)
-  colorPalette=( $(shuf -e '11235A|596FB7|C6CF9B|F6ECA9|596FB7|DarkBlue,Blue,LightGreen,LightYellow. 11235a596fb7c6cf9bf6eca9' \
-                           '240750|344C64|577B8D|57A6A1|344C64|Cold:DarkBlue,Teal. 240750344c64577b8d57a6a1'\
-                           '7C00FE|F9E400|FFAF00|F5004F|F9E400|Blue,Yellow,Orange,Red. 7c00fef9e400ffaf00f5004f' \
-                           'B1D690|FEEC37|FFA24C|FF77B7|FEEC37|LightGreen,Yellow,Orange,Pink,Yellow. b1d690feec37ffa24cff77b7' \
-                           '3B1E54|9B7EBD|D4BEE4|EEEEEE|9B7EBD|DarkPurple,Purple,Violet,LightGrey,DarkPurple. 3b1e549b7ebdd4bee4eeeeee' ) )
-  IFS="|" read -r color1 color2 color3 color4 color5 paletteDescription  <<< "$colorPalette"
+  dsPaletteCollection=(); unset dsPaletteCollection[@]; dsColor=(); unset dsColor[@]
+  ds300=('404040|ffffff|C0C0C0|000000|Simil|format=gray|DarkGrey,White,LightGray,Black| 404040ffffffC0C0C0000000')
+  ds301=('603F26|FFEAC5|FFDBB5|6C4E31|Simil|rgb(96, 63, 38)  |DarkBrown,LightWeath,Weath,Brown| ffeac5ffdbb56c4e31603f26')
+  ds302=('640D6B|F1EAFF|E5D4FF|DCBFFF|Simil|rgb(100, 13,107) |DarkPurple,VeryLightViolet,LightViolet,OtherViolet| f1eaffe5d4ffdcbfffd0a2f7')
+  ds303=('16423C|C4DAD2|6A9C89|E9EFEC|Simil|rgb(22, 66, 60)  |DarkGreen,LightGreen,Green,VeryLightGreen| 16423c6a9c89c4dad2e9efec')
+  ds304=('176B87|86B6F6|B4D4FF|EEF5FF|Simil|rgb(23, 107, 135)|DarkAqua,Blue,LightBlue,VeryLightBlue| eef5ffb4d4ff86b6f6176b87')
+  ds351=('6C946F|FFD35A|FFA823|DC0083|Mixed|rgb(108,148,111) |Green,Yellow,Orange,Purple| 6c946fffd35affa823dc0083')
+  ds352=('FF8000|4C1F7A|219B9D|FFF455|Mixed|rgb(255,128, 0)  |Orange,Purple,Teal,Yellow(wasLightGray)| ff80004c1f7a219b9deeeeee')
+  ds353=('57A6A1|F9E400|FFAF00|F5004F|Mixed|rgb(87,166,161)  |Teal,Yellow,Orange,Red| 7c00fef9e400ffaf00f5004f')
+  ds354=('FF77B7|B1D690|FEEC37|FFA24C|Mixed|rgb(255,119,183) |Pink,LightGreen,Yellow,Orange| b1d690feec37ffa24cff77b7')
+  ds355=('3B1E54|9B7EBD|D4BEE4|EEEEEE|Mixed|rgb(59, 30, 84)  |DarkPurple,Purple,Violet,LightGrey| 3b1e549b7ebdd4bee4eeeeee' )
+
+  dsPaletteCollection=("ds300" "ds301" "ds302" "ds303" "ds304" "ds351" "ds352" "ds353" "ds354" "ds355")
+  consistencySelection=( $(shuf -e "Simil" "Mixed") ) #"Test0" #( $(shuf -e "Simil" "Mixed") )
+  for (( n=${#dsPaletteCollection[@]}; n > 0 ; n-- )); do
+      for set in "${dsPaletteCollection[$n - 1]}"; do declare -n paletteSet="$set"; done
+      if [[ "${paletteSet[0]:28:5}" =~ $consistencySelection  ]]; then dsColor+=($set); fi
+  done
+  dsColor=(  $(shuf -e ${dsColor[@]} ) )    
+  for set in "${dsColor}"; do declare -n colorSet="$set"; done
+  IFS="|" read -r color1 color2 color3 color4 consistency bgGammaRGB paletteDescription https_colorhunt_co_palette <<< "${colorSet[0]}"
+  logger+=("  consistencySelection--> $consistencySelection"); logger+=("  dsColorSet--> ${colorSet[0]}")
   #Coordinating Color Palette End
 
   #Logo Image Begin
   if [[ ! "${typed_arguments,,}" == *"-nologo"* ]] || [[ ! "${typed_arguments,,}" == *"-noposter"* ]] ; then
-    ProcedureEchoFeedback 'LOGO_WORK' "Designing a unique logo with a color palette ($color1)($color2)($color3)($color4)($color5)($paletteDescription)... \n"
+    ProcedureEchoFeedback 'LOGO_WORK' "Designing a unique logo with a color palette $paletteDescription...";  logger+=("LOGO_(START)")
     ProcedureFilenameToLinesArray "${base_name[@]}"
 
     if [ ! -f  "${f%.*}/_temp" ]; then mkdir -p "${f%.*}/_temp"; fi
     _temp="${f%.*}/_temp";
     placeholderImage="$_temp/_temp310x202.png"
-    ffmpeg -f lavfi -i "color=c=0xffffff@0x00:s=310x202:duration=1,format=rgba" "$placeholderImage" -y -loglevel panic    
+    ffmpeg -f lavfi -i "color=c=0xffffff@0x00:s=310x202:duration=1,format=rgba" "$placeholderImage" -y -loglevel panic
 
-    #Hint: ('RelativeSize-SML#AllCaps?' 'Fontname'   'charCount|fontSize|pixelHeight' )
-    dataset00=('S#'  'Oswald'         '0|0|0' '1|80|82'  '2|80|82' '3|74|76' '4|74|76' '5|60|62'  '6|60|62'  '7|64|64' '8|58|60' '9|58|62' '10|58|62' '11|60|62' '12|58|62' '13|52|54' '14|50|50' '15|48|50' '16|44|48' '17|28|37' '18|28|37' '19|28|37' '20|30|37')
-    dataset01=('L#'  'MouseMemoirs'   '0|0|0' '1|78|68'  '2|78|68' '3|78|68' '4|78|68' '5|78|68'  '6|88|84'  '7|86|82' '8|64|62' '9|68|68' '10|70|64' '11|72|72' '12|72|70' '13|70|68' '14|68|64' '15|64|62' '16|58|50' '17|58|50' '18|54|50' '19|50|48' '20|42|42')
-    dataset02=('L#'  'Ranchers'       '0|0|0' '1|78|68'  '2|78|68' '3|74|68' '4|64|68' '5|64|68'  '6|58|60'  '7|58|60' '8|54|60' '9|58|64' '10|48|50' '11|46|50' '12|48|50' '13|46|50' '14|46|50' '15|44|48' '16|36|42' '17|38|42' '18|36|40' '19|32|38' '20|32|38')
-    dataset03=('L#'  'Jersey 25'      '0|0|0' '1|102|68' '2|98|68' '3|94|68' '4|90|68' '5|140|68' '6|90|68'  '7|88|68' '8|86|68' '9|82|68' '10|74|68' '11|64|50' '12|56|46' '13|54|42' '14|52|44' '15|50|44' '16|46|40' '17|40|38' '18|38|34' '19|34|33' '20|34|33')
-    dataset04=('M#'  'Darumadrop One' '0|0|0' '1|104|68' '2|98|68' '3|96|68' '4|92|68' '5|100|68' '6|100|68' '7|78|50' '8|74|50' '9|70|50' '10|62|50' '11|58|50' '12|50|48' '13|44|38' '14|44|42' '15|44|40' '16|38|38' '17|36|34' '18|34|30' '19|30|28' '20|30|28')
-    dataset05=('S#'  'Archivo Black'  '0|0|0' '1|90|68'  '2|88|68' '3|84|68' '4|84|68' '5|84|68'  '6|80|68'  '7|64|50' '8|64|50' '9|64|50' '10|50|50' '11|46|48' '12|40|44' '13|36|36' '14|34|34' '15|34|36' '16|32|32' '17|30|28' '18|28|26' '19|26|26' '20|22|24')
-    dataset06=('M#'  'Slackey'        '0|0|0' '1|80|68'  '2|86|68' '3|84|68' '4|80|68' '5|80|68'  '6|68|68'  '7|62|68' '8|52|50' '9|50|48' '10|42|42' '11|44|48' '12|40|46' '13|32|30' '14|32|34' '15|30|28' '16|28|28' '17|30|28' '18|28|28' '19|26|28' '20|22|26')
-    dataset07=('S#'  'Chewy'          '0|0|0' '1|84|68'  '2|84|68' '3|82|68' '4|84|68' '5|82|68'  '6|68|50'  '7|60|50' '8|58|50' '9|60|50' '10|60|50' '11|60|50' '12|58|50' '13|48|50' '14|46|50' '15|44|50' '16|40|46' '17|28|36' '18|30|36' '19|30|36' '20|30|36')
-    dataset50=('S#C' 'Bungee'         '0|0|0' '1|90|68'  '2|88|68' '3|86|68' '4|88|68' '5|84|68'  '6|68|68'  '7|60|48' '8|54|46' '9|48|40' '10|46|40' '11|42|36' '12|38|34' '13|36|36' '14|32|28' '15|32|32' '16|30|32' '17|28|32' '18|28|30' '19|22|24' '20|22|24')
-    dataset51=('M#C' 'pixeldead'      '0|0|0' '1|88|68'  '2|88|68' '3|88|68' '4|88|68' '5|88|68'  '6|82|78'  '7|72|58' '8|62|50' '9|60|50' '10|56|50' '11|48|42' '12|44|42' '13|42|38' '14|38|36' '15|36|36' '16|34|32' '17|36|36' '18|34|34' '19|30|30' '20|26|26')
-    dataset52=('X#C' 'Nosifer'        '0|0|0' '1|90|68'  '2|86|68' '3|88|68' '4|86|68' '5|54|50'  '6|52|50'  '7|46|50' '8|48|46' '9|38|40' '10|34|36' '11|32|32' '12|28|34' '13|28|32' '14|26|26' '15|24|26' '16|22|24' '17|22|24' '18|22|24' '19|20|22' '20|16|20')
-    dataset53=('M#C' 'arco'           '0|0|0' '1|86|68'  '2|86|68' '3|84|68' '4|82|68' '5|80|66'  '6|70|50'  '7|54|50' '8|52|48' '9|50|46' '10|42|38' '11|40|36' '12|36|34' '13|34|32' '14|30|26' '15|30|26' '16|28|26' '17|30|26' '18|28|26' '19|26|26' '20|24|26')
-    dataset54=('M#C' 'Sigmar One'     '0|0|0' '1|84|68'  '2|84|68' '3|84|68' '4|84|68' '5|84|68'  '6|68|50'  '7|54|48' '8|52|46' '9|48|40' '10|44|38' '11|42|38' '12|38|36' '13|32|30' '14|30|28' '15|30|28' '16|28|28' '17|30|28' '18|28|28' '19|24|24' '20|22|20')
-    dataset55=('M#C' 'Trade Winds'    '0|0|0' '1|82|68'  '2|80|68' '3|80|68' '4|82|68' '5|76|68'  '6|72|68'  '7|62|64' '8|60|50' '9|58|50' '10|54|50' '11|48|48' '12|44|46' '13|38|44' '14|38|40' '15|36|36' '16|34|34' '17|32|36' '18|30|30' '19|28|28' '20|26|26')
+    pixelHeightArray=(); unset pixelHeightArray[@]; dsFonts=(); unset dsFonts[@]  
+    dsFontsForLine1=(); dsFontsForLine234=(); dsFontsForLongerThan20=(); unset dsFontsForLine1[@]; unset dsFontsForLine234[@]; unset dsFontsForLongerThan20[@]
 
-    justification=( $(shuf -e "1" "(w-text_w)/2" ) )
-    flag_fontSet=0  
+    ds00=('0|0|1|MC|OK|Oswald'         '1|80|74'  '2|80|76' '3|74|72' '4|74|70' '5|60|64'  '6|60|66'  '7|64|56' '8|58|56' '9|58|62' '10|58|64' '11|60|64' '12|58|62' '13|52|54' '14|50|54' '15|48|54' '16|44|48' '17|28|32' '18|28|34' '19|28|30' '20|30|34')
+    ds01=('0|0|1|MC|OK|MouseMemoirs'   '1|78|64'  '2|78|64' '3|78|64' '4|78|68' '5|78|64'  '6|88|70'  '7|86|70' '8|64|56' '9|68|62' '10|70|62' '11|72|70' '12|72|66' '13|70|64' '14|68|64' '15|64|60' '16|58|56' '17|58|56' '18|40|38' '19|40|38' '20|40|34')
+    ds02=('1|1|0|MC|OK|Ranchers'       '1|78|70'  '2|78|70' '3|74|68' '4|64|62' '5|64|62'  '6|58|54'  '7|58|54' '8|54|60' '9|58|56' '10|48|48' '11|46|46' '12|48|48' '13|46|48' '14|46|48' '15|44|48' '16|40|44' '17|38|42' '18|30|34' '19|30|34' '20|30|34')
+    ds03=('0|0|0|MC|OK|Jersey 25'      '1|98|66'  '2|98|66' '3|94|64' '4|90|62' '5|90|62'  '6|90|62'  '7|88|60' '8|86|62' '9|80|58' '10|72|58' '11|64|50' '12|56|42' '13|52|42' '14|52|44' '15|50|44' '16|44|38' '17|40|34' '18|38|34' '19|34|28' '20|34|30')
+    ds04=('1|1|0|MC|OK|Darumadrop One' '1|104|68' '2|98|68' '3|96|68' '4|92|68' '5|100|72' '6|100|68' '7|78|52' '8|72|52' '9|70|56' '10|58|46' '11|58|50' '12|50|42' '13|44|38' '14|42|36' '15|40|34' '16|38|36' '17|36|34' '18|34|34' '19|30|30' '20|30|28')
+    ds05=('0|1|0|MC|OK|Archivo Black'  '1|90|70'  '2|88|66' '3|84|66' '4|84|70' '5|82|68'  '6|80|64'  '7|64|60' '8|64|62' '9|54|52' '10|48|48' '11|46|46' '12|40|40' '13|36|36' '14|34|34' '15|32|34' '16|30|30' '17|28|30' '18|28|30' '19|26|28' '20|22|24')
+    ds06=('1|1|0|MC|OK|Slackey'        '1|80|64'  '2|86|74' '3|84|68' '4|80|68' '5|80|66'  '6|68|56'  '7|62|50' '8|52|46' '9|50|48' '10|42|40' '11|44|42' '12|40|40' '13|32|30' '14|32|32' '15|28|30' '16|26|26' '17|26|26' '18|24|26' '19|22|24' '20|20|22')
+    ds07=('1|1|0|MC|OK|Chewy'          '1|84|68'  '2|84|78' '3|82|78' '4|84|78' '5|82|78'  '6|68|60'  '7|60|56' '8|58|56' '9|60|52' '10|60|60' '11|60|60' '12|58|52' '13|48|44' '14|46|44' '15|44|44' '16|40|40' '17|34|41' '18|30|36' '19|30|36' '20|30|36')
+    ds08=('1|0|0|UP|OK|Bungee'         '1|90|72'  '2|88|68' '3|86|68' '4|88|68' '5|84|68'  '6|68|56'  '7|60|48' '8|54|44' '9|48|40' '10|44|38' '11|42|36' '12|38|32' '13|34|30' '14|32|28' '15|30|26' '16|28|26' '17|26|24' '18|24|24' '19|22|20' '20|22|20')
+    ds09=('1|0|0|UP|NA|Pixeldead'      '1|88|70'  '2|88|66' '3|88|68' '4|88|72' '5|88|78'  '6|82|70'  '7|72|56' '8|62|50' '9|60|50' '10|50|48' '11|48|42' '12|42|40' '13|40|36' '14|36|34' '15|34|34' '16|32|32' '17|28|26' '18|32|34' '19|30|30' '20|26|26')
+    ds10=('1|0|0|UP|OK|Nosifer'        '1|90|72'  '2|86|78' '3|88|80' '4|86|80' '5|58|60'  '6|52|58'  '7|48|54' '8|42|50' '9|36|44' '10|34|40' '11|34|40' '12|30|34' '13|26|32' '14|26|34' '15|24|30' '16|22|28' '17|22|28' '18|20|24' '19|18|24' '20|16|22')
+    ds11=('1|0|0|UP|OK|Arco'           '1|86|68'  '2|86|68' '3|84|68' '4|82|68' '5|78|64'  '6|70|60'  '7|54|46' '8|52|46' '9|50|44' '10|42|38' '11|40|36' '12|36|34' '13|34|32' '14|30|28' '15|28|26' '16|28|26' '17|28|26' '18|26|26' '19|24|24' '20|22|22')
+    ds12=('1|0|0|UP|OK|Sigmar One'     '1|84|76'  '2|84|66' '3|84|54' '4|84|62' '5|78|58'  '6|68|56'  '7|54|40' '8|52|44' '9|48|38' '10|42|38' '11|42|36' '12|38|32' '13|32|26' '14|30|26' '15|30|30' '16|28|24' '17|28|26' '18|26|24' '19|24|24' '20|22|20')
+    ds13=('1|1|0|UP|OK|Trade Winds'    '1|82|72'  '2|80|70' '3|80|68' '4|82|68' '5|76|68'  '6|72|62'  '7|62|60' '8|60|60' '9|58|52' '10|50|50' '11|48|48' '12|44|44' '13|38|40' '14|38|40' '15|36|40' '16|32|30' '17|30|34' '18|30|30' '19|28|28' '20|26|26')
+
+    dsFonts=( "ds00" "ds01" "ds02" "ds03" "ds04" "ds05" "ds06" "ds07" "ds08" "ds09" "ds10" "ds11" "ds12" "ds13" )    
+    for (( n=${#dsFonts[@]}; n >=0 ; n-- )); do
+        for set in "${dsFonts[$n - 1]}"; do declare -n dataSet="$set"; done
+        IFS="|" read -r flag1 flag2 flag3 flagCase flagActive fontName <<< "${dataSet[0]}";
+        if [ $flag1 -eq 1 ] && [[ $flagActive =~ "OK" ]]; then dsFontsForLine1+=($set); fi
+        if [ $flag2 -eq 1 ] && [[ $flagActive =~ "OK" ]]; then dsFontsForLine234+=($set); fi
+        if [ $flag3 -eq 1 ] && [[ $flagActive =~ "OK" ]]; then dsFontsForLongerThan20+=($set); fi    
+    done
+    dsFontsForLine1=(  $(shuf -e ${dsFontsForLine1[@]} ) )
+    dsFontsForLine234=( $(shuf -e ${dsFontsForLine234[@]} ) )
+    dsFontsForLongerThan20=(  $(shuf -e ${dsFontsForLongerThan20[@]} ) )
+    logger+=("  dsFontsForLine1--> $dsFontsForLine1");  logger+=("  dsFontsForLine234--> $dsFontsForLine234");  logger+=("  dsFontsForLongerThan20--> $dsFontsForLongerThan20")
+  
+    textAlignment=( $(shuf -e "1" "(w-text_w)/2" "w-text_w-3") )
+    for (( n=${#lines_array[@]}; n >=0 ; n-- )); do 
+      if [[ ${#lines_array[$n]} -gt 20 ]]; then textAlignment="w-text_w-3"; fi 
+    done
+    logger+=("  textAlignment--> $textAlignment")
+    
+    flag_fontSelected=0
     for (( i=0; i < ${#lines_array[@]}; i++ )); do
-      if [ $i -eq 0 ]; then  #AllCaps fonts
-        datasetCollection=( $(shuf -e "dataset50" "dataset51" "dataset52" "dataset53" "dataset54" "dataset55" ) );
-        for sets in "${datasetCollection[0]}"; do declare -n fontData="$sets"; done
-        fontColor=$color2; fontBorderColor=$color3
-        flag_fontSet=( $(shuf -e 0 0 0 0 1 1) )
+      if [ $i -eq 0 ]; then
+          fontColor=$color2; fontBorderColor=$color3
+          for set in "${dsFontsForLine1}"; do declare -n dataSet="$set"; done
+          flagCase=${dataSet[0]:6:2}; 
+          if [[ $flagCase =~ "MC" ]]; then flag_fontSelected=( $(shuf -e 1 0 1 1 0) ); fi
+          y_offset=1;
       fi
 
-      if [ $flag_fontSet -eq 0 ] && [ $i -gt 0 ]; then
-        datasetCollection=( $(shuf -e "dataset00" "dataset01" "dataset02" "dataset03" "dataset04" "dataset05" "dataset06" "dataset07" ) )
-        for sets in "${datasetCollection[1]}"; do declare -n fontData="$sets"; done
-        fontColor=$color3; fontBorderColor=$color4
-        flag_fontSet=( $(shuf -e 0 1 1 1) )
-      fi 
-
-      if [[ ${#lines_array[$i]} -gt 20 ]]; then  #the film title exceeds 20 char lenght.
-        IFS="|" read -r charCount fontSize pixelHeight <<< "${fontData[22]}"; 
-      else  #Grabs dataset values based on char lenght. Example dataset00 w/7 chars: ${fontData[7+2]}='7|86|82' --> 'charCount fontSize pixelHeight'
-        IFS="|" read -r charCount fontSize pixelHeight <<< "${fontData[ $(( ${#lines_array[$i]} + 2 )) ]}"  
+      if [ $i -gt 0 ] && [ $flag_fontSelected -eq 0 ]; then        
+          for set in "${dsFontsForLine234[0]}"; do declare -n dataSet="$set"; done
+          fontColor=$color3; fontBorderColor=$color4
+          flag_fontSelected=( $(shuf -e 0 1 1 1 0 1 1) )
       fi
-      fontName=${fontData[1]}
+      IFS="|" read -r charCount fontSize pixelHeight <<< "${dataSet[ $(( ${#lines_array[$i]} )) ]}"
 
-      case $i in
-        0)  y_offset=1 ;; 
-        1)  y_offset=68 ;;
-        2)  y_offset=118 ;; #(118=68px + 50px)      
-        3)  y_offset=168    #(168=68px + 50px + 50px , 37px left for Height)
-            elementAt=23    #(the last dataset element.  Example '20|24|22')
-            if [ $charCount -le 18 ]; then 
-              while [ $elementAt -gt 3 ]; do
-                IFS="|" read -r charCountDismissedHere fontSize pixelHeight <<< "${fontData[ ${elementAt} ]}"
-                if [[ $pixelHeight -gt 35 ]] && [[ $pixelHeight -lt 41 ]]; then elementAt=0 ;fi 
-                let elementAt--
-              done              
-            fi 
-            if [[ ${#lines_array[$i]} -gt 20 ]]; then justification="1"; fi ;; 
-      esac
+      if [[ ${#lines_array[$i]} -gt 20 ]]; then
+          flag3=${dataSet[0]:4:1};
+          if [[ $flag3 =~ "0" ]]; then
+              for set in "${dsFontsForLongerThan20[0]}"; do declare -n dataSet="$set"; done
+              IFS="|" read -r charCount fontSize pixelHeight <<< "${dataSet[20]}"
+          fi
+      fi
+      
+      fontName=${dataSet[0]:12}
+      pixelHeightArray+=($pixelHeight)
+      y_offset=1
+      for (( n = 1; n < ${#pixelHeightArray[@]}; ++n )); do y_offset=$((y_offset + ${pixelHeightArray[$n - 1]} )); done
+      if [[ $(echo "$y_offset + $pixelHeight" | bc) -gt 202 ]]; then y_offset=$(echo "202 - $pixelHeight" | bc); fi
 
-echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixelHeight",            ["${lines_array[$i]}"]"   #4Debug
-            
+      logger+=("  [${lines_array[$i]}]  fontName--> $fontName,  fontData="$charCount"|"$fontSize"|"$pixelHeight",   y_offset=$y_offset")
       ffmpeg -i "$placeholderImage" \
              -filter_complex "[0:0]crop=2:2:in_w:in_h[img];color=c=0xffffff@0x00:s=310x202,format=rgba \
-                             ,drawtext=text='${lines_array[$i]}':fontfile=$fontName:fontcolor=$fontColor:fontsize=$fontSize:bordercolor=$fontBorderColor:borderw=1:shadowx=3:shadowy=3:x=$justification:y=$y_offset[bg]; \
+                             ,drawtext=text='${lines_array[$i]}':fontfile=$fontName:fontcolor=$fontColor:fontsize=$fontSize:bordercolor=$fontBorderColor:borderw=1:shadowx=3:shadowy=3:x=$textAlignment:y=$y_offset[bg]; \
                              [bg][img]overlay=0:0:format=rgb,format=rgba[out]" \
              -map [out] -c:v png -frames:v 1 \
-             "$_temp/_tempClearlogo$i.png" -y -loglevel error   
-    done
-    ffmpeg_filter_complex="[1]scale=-1:-1[b];[0:v][b] overlay"
+             "$_temp/_tempClearlogo$i.png" -y -loglevel error
+    done #for i=0 to max lines_array()
+    ffmpeg_filter_complex="[1]scale=-1:-1[b];[0][b] overlay"
     case ${#lines_array[@]} in
       1)  mv "$_temp/_tempClearlogo0.png" "$_temp/_tempClearlogo.png";; 
 
@@ -375,127 +434,143 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
                   "$_temp/_tempClearlogo.png" -y -loglevel error ;;
     esac 
     mv "$_temp/_tempClearlogo.png" "${f%.*}/Clearlogo.png" 
-    rm -f -- "$_temp"/_temp*.*    
+    rm -f -- "$_temp"/_temp*.*
+
+    min=-3;  max=9
+    stillFrameRotationAngle=$(( RANDOM % (max-min+1) + min ))
+    clearlogoRotationAngle=$(( RANDOM % (max-min+1) + min ))
+
+    expansionExpressionReplaceSpacewPlus=${pixelHeightArray[@]/%/ +}0
+    clearlogoDrawboxDeco_h=$(echo $(( ${expansionExpressionReplaceSpacewPlus} )) )
+    logger+=("  stillFrameRotationAngle--> $stillFrameRotationAngle,  clearlogoRotationAngle--> $clearlogoRotationAngle,  clearlogoDrawboxDeco_h--> $clearlogoDrawboxDeco_h") 
+
+    ffmpeg -f lavfi -i "color=c=0xffffff@0x00:s=360x282:duration=1,format=rgba" "$_temp/_temp360x282.png" -y -loglevel panic  
+    ffmpeg -i "$_temp/_temp360x282.png" -i "${f%.*}/Clearlogo.png" \
+           -filter_complex "[1]scale=-1:180[clearlogo];
+                            [0][clearlogo]overlay=30:54,rotate=-$clearlogoRotationAngle*PI/180,crop=310:202" \
+            -vframes 1 \
+           "$_temp/ClearlogoRotated.png" -y -loglevel error 
+    rm -f "$_temp/_temp360x282.png"       
+     
     ProcedureEchoFeedback 'LOGO_DONE'
+    logger+=("LOGO_(DONE)")
   fi
   #End Logo Image
 
+
   #Poster Images Begin
   if [[ ! "${typed_arguments,,}" == *"-noposter"* ]]; then
-    ProcedureEchoFeedback 'POSTER_START' 'Working on posters'
+    ProcedureEchoFeedback 'POSTER_START' 'Working on posters'; logger+=("POSTER_(START)")
     if [ ! -f  "${f%.*}/_temp" ]; then mkdir -p "${f%.*}/_temp"; fi
     _temp="${f%.*}/_temp";
 
-    idx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); 
-    teaser=${TEASERS[$idx]}
-    fontNameInHDR='SigmarOne-Regular'
-    colorPosterBg=$color1
-    colorTextInHDR=$color1
+    idx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); TEASER=${TEASERS[$idx]};  logger+=("  idx/TEASER--> $idx/$TEASER")
+    fontNameInHDR='Sigmar One'; fontNameTeaser='Oswald'; colorPosterBg=$color1;
 
-    inHDR_overlay=""
     if [[ $dynamicRange == *"HDR"* ]]; then
-      inHDR_overlay=",drawbox=x=0:y=(ih/1.96):w=(iw*0.29):h=(ih*0.062):color=white@0.5:thickness=fill, \
-                      drawtext=text='in HDR!':fontcolor=$GUI_ACCENTCOLOR1:fontfile='$fontNameInHDR':x=(w*0.02):y=(h/1.9):fontsize=(h*0.035):bordercolor='$GUI_ACCENTCOLOR2':borderw=6"
+      drawbox_inHDR=",drawbox=x=0:y=(ih/1.96):w=(iw*0.27):h=(ih*0.052):color=white@0.5:thickness=fill"
+      drawtext_inHDR=",drawtext=text='$INHDR_TEXT':fontcolor=$GUI_ACCENTCOLOR1:fontfile='$fontNameInHDR':x=(w*0.02):y=(h/1.9):fontsize=(h*0.03):bordercolor='$GUI_ACCENTCOLOR2':borderw=6"
     fi
-    ffmpeg_roundcorner="format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${poster_radius})*gt(abs(H/2-Y),H/2-${poster_radius}),if(lte(hypot(${poster_radius}-(W/2-abs(W/2-X)),${poster_radius}-(H/2-abs(H/2-Y))),${poster_radius}),255,0),255)'"
+    ffmpeg_roundcorner="format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${poster_radius})*gt(abs(H/2-Y),H/2-${poster_radius}),\
+                        if(lte(hypot(${poster_radius}-(W/2-abs(W/2-X)),${poster_radius}-(H/2-abs(H/2-Y))),${poster_radius}),255,0),255)'"
+
+    if [[ $(( RANDOM % (30 + 30) + (-30) )) -ge 0  ]]; then  #if randon mumber >=0, then rotate still frame and use rotated logo, else use horizontal clearlogo.png image
+      ffmpeg_scale="scale=-1:(ih/1.8)"
+      ProcedureRgbTo_ffmpeg_eq "$bgGammaRGB" #assign value to $ffmpeg_eq
+      ffmpeg_stillTransform="rotate=$stillFrameRotationAngle*PI/180:c=none"
+      clearlogo_imagefolder="$_temp/ClearlogoRotated.png"
+    else
+      ffmpeg_scale="scale=-1:660"
+      ffmpeg_eq="eq=brightness=0.2:contrast=1:saturation=1.5"
+      ffmpeg_stillTransform="crop=740:660:160:(in_h)"
+      clearlogo_imagefolder="${f%.*}/Clearlogo.png"
+    fi
+    logger+=("  ffmpeg_scale--> $ffmpeg_scale"); logger+=("  ffmpeg_eq--> $ffmpeg_eq"); 
+    logger+=("  ffmpeg_stillTransform--> $ffmpeg_stillTransform");  logger+=("  clearlogo_imagefolder--> $clearlogo_imagefolder")
+    
+    ds90=('55:675' '0:100'    '0:25:780:74'    'x=(w-text_w)/2:y=45'   '160:720' 'teaser@top----still@mid-----clearlogo@bottom')
+    ds91=('55:10'  '0:350'    '0:950:720:90'   'x=(w-text_w)/2:y=960'  '0:0'     'clearlogo@top-still@mid-----teaser@bottom'   )
+    ds92=('55:620' '0:40'     '0:1020:720:60'  'x=(w-text_w)/2:y=1030' '0:0'     'still@top-----clearlogo@mid-teaser@bottom'   )
+    ds93=('55:0'   '0:478'    '0:420:720:56'   'x=(w-text_w)/2:y=430'  '0:0'     'clearlogo@top-teaser@mid----still@bottom'    )
+    ds94=('55:675' '-100:100' '0:25:780:74'    'x=(w-text_w)/2:y=45'   '0:0'     'teaser@top----still@mid-----clearlogo@bottom')
+    ds95=('55:10'  '0:350'    '220:80:720:280' 'x=(w-text_w)/2:y=1035' '40:80'   'clearlogo@top-still@mid-----teaser@bottom'   )
+    ds96=('55:680' '40:80'    '0:0:2:2'        'x=(w-text_w)/2:y=35'   '0:25'    'clearlogo@top-still@fill----teaser@bottom'   )
+    dsPosterDesign="ds90"   #( $(shuf -e "ds90" "ds91" "ds92" "ds93" "ds94" "ds95" "ds96" ) )
+    declare -n posterSet="$dsPosterDesign"; 
+    clearLogo_xy=${posterSet[0]};   still_xy=${posterSet[1]};  drawboxTeaser_xywh=${posterSet[2]}; 
+    fontTeaser_xy=${posterSet[3]};  clearlogoDeco_xy_w_h=${posterSet[4]}:$(( 320 * 2 + 20 )):$(( $clearlogoDrawboxDeco_h * 2 - 40));
+    logger+=("  dsPosterDesign--> $dsPosterDesign"); logger+=("  posterSet--> $posterSet"); 
+
+    drawbox_bgcolor=$color4  #( $(shuf -e  $color4 $colorPosterBg $colorPosterBg ) ) 
+    drawbox_teaser="drawbox=$drawboxTeaser_xywh:color='$drawbox_bgcolor'@1:thickness=fill"
+    drawtext_teaser="drawtext=text='$posterStyle$TEASER':fontcolor='$GUI_ACCENTCOLOR1':fontfile=$fontNameTeaser:$fontTeaser_xy:fontsize=h/28:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
+    randomDrawboxDeco=( $(shuf -e ',drawbox=0:0:1:1' ',drawbox=0:0:1:1' ',drawbox=x=0:y=0:w=720:h=1080:color='$colorPosterBg'@1:t=2' ',drawbox=0:0:1:1' ',drawbox=x=0:y=0:w=720:h=1080:color='$colorPosterBg'@1:t=10' ))
+    logger+=("  drawbox_bgcolor--> $drawbox_bgcolor"); logger+=("  randomDrawboxDeco--> $randomDrawboxDeco") 
+
+    ffmpeg -f lavfi -i color=c=0x$colorPosterBg:duration=1:s=720x1080:r=1 \
+            -filter_complex "$ffmpeg_roundcorner,$drawbox_teaser,$drawtext_teaser" \
+            "$_temp/_tempRoundCornerBg.png" -y -loglevel error          
 
     if [[ $ffprobe_height -ge 1080 ]]; then
-      logo_design=( $(shuf -e '1080p-design1' '1080p-design2') ); 
+      posterStyle=( $(shuf -e 'style2' 'style2' 'style2') ); 
     elif [[ $ffprobe_height -gt 720 ]] && [[ $ffprobe_height -le 1079 ]]; then
-      logo_design=( $(shuf -e '1080p-design1' '1080p-design2' '1079p') )
+      posterStyle=( $(shuf -e 'style1' 'style2') ); 
     else
-      logo_design='1079p'
+      posterStyle='style1'
     fi
-    case $logo_design in
-    '1080p-design1')
-      dataset0=('x=20:y=25:w=680:h=50'   'Oswald' 'x=(w-text_w)/2:y=35:fontsize=h/28'   '55:680' )  #teasertop-clearlogobottom-->(drawbox:y:h, fontname, positionx:y:fontsize, clearlogoposx:y)
-      dataset1=('x=20:y=970:w=680:h=50'  'Oswald' 'x=(w-text_w)/2:y=980:fontsize=h/28'  '55:0'   )  #teaserbottom-clearlogotop
-      dataset2=('x=20:y=1020:w=680:h=50' 'Oswald' 'x=(w-text_w)/2:y=1030:fontsize=h/28' '55:620' )  #clearlogo&teaser-bottom
-      datasetCollection=( $(shuf -e "dataset0" "dataset1" "dataset2" ) ) 
-      declare -n teaserData="$datasetCollection"
-      teaser_overlay=",drawbox=${teaserData[0]}:color='$colorPosterBg'@1:thickness=fill,drawtext=text='$teaser':fontcolor='$GUI_ACCENTCOLOR1':fontfile=${teaserData[1]}:${teaserData[2]}:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
-		
-      for ((n=1; n<=$MAX_POSTERS; n++)); do
-        ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
-        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.10" | bc)";  
-        if [ $(echo "scale=2; $ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi #leading zero for _ssAt less than 1.00
-        ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
-               -filter_complex "crop=in_w/2:in_h,eq=brightness=0.2,$ffmpeg_roundcorner$teaser_overlay" \
-               -frames:v 1 -q:v 2 \
-               "$_temp/_temp$n.png" -y -loglevel error
-        ffmpeg -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" \
-               -filter_complex "[1]scale=-1:404[logo]; [0][logo]overlay=${teaserData[3]}$inHDR_overlay" \
-               -q:v 2 \
-               "$_temp/poster$n.png" -y -loglevel error
-        rm -f "$_temp/_temp$n.png"
-      done ;;
-    '1080p-design2')
-      teaser_overlay=",drawtext=text='$teaser':fontcolor='$GUI_ACCENTCOLOR1':fontfile='Oswald':x=(w-text_w)/2:y=1035:fontsize=h/28:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
-      ffmpeg -f lavfi -i color=c=0x$colorPosterBg:duration=1:s=720x1080:r=1 \
-             "$_temp/_tempbase.mp4" -y -loglevel error
-      ffmpeg -ss 0 -i "$_temp/_tempbase.mp4" \
-             -filter_complex "$ffmpeg_roundcorner$teaser_overlay" \
-             -frames:v 1 -q:v 1 \
-             "$_temp/_temproundteaser.png" -y -loglevel error; 
-      rm -f "$_temp/_tempbase.mp4"
-      for ((n=1; n<=$MAX_POSTERS; n++)); do
-        ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
-        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)";  
-		    if [ $(echo "scale=2;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
-        ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
-               -frames:v 1 -q:v 2 \
-               "$_temp/_temp$n.png" -y -loglevel error
-        ffmpeg -i "$_temp/_temproundteaser.png" -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" \
-               -filter_complex "[1]scale=-1:660,eq=brightness=0.2:contrast=1:saturation=1.5,crop=740:660:160:(in_h)[still]; \
-                                [2]scale=-1:404[logo]; \
-                                [0][still]overlay=-1:360[partial]; \
-                                [partial][logo]overlay=55:10$inHDR_overlay" -q:v 1 \
-               "$_temp/poster$n.png" -y -loglevel error
-        rm -f "$_temp/_temp$n.png"
-      done ;;      
-    '1079p') 
-      dataset0=('55' 'Oswald' 'x=(w-text_w)/2:y=10:fontsize=h/28'   '55:680' )  #teasertop-clearlogobottom-->('n/a', fontname, positionx:y:fontsize, clearlogoposx:y)
-      dataset1=('40' 'Oswald' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:0'   )  #clearlogotop-teaserbottom
-      dataset2=('40' 'Oswald' 'x=(w-text_w)/2:y=1035:fontsize=h/28' '55:620' )  #clearlogo&teaser-bottom
-      datasetCollection=( $(shuf -e "dataset0" "dataset1" "dataset2" ) ) 
-      declare -n teaserData="$datasetCollection"                                #for debug: teaserData=("${dataset2[@]}")
-      teaser_overlay=",drawtext=text='$teaser':fontcolor='$GUI_ACCENTCOLOR1':fontfile=${teaserData[1]}:${teaserData[2]}:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
 
-      ffmpeg -f lavfi -i color=c=0x$colorPosterBg:duration=1:s=720x1080:r=1 \
-             "$_temp/_tempbase.mp4" -y -loglevel error
-      ffmpeg -ss 0 -i "$_temp/_tempbase.mp4" \
-             -filter_complex "$ffmpeg_roundcorner$teaser_overlay" \
-             -frames:v 1 -q:v 1 \
-             "$_temp/_temproundteaser.png" -y -loglevel error; 
-      rm -f "$_temp/_tempbase.mp4"
+    for ((n=1; n<=$MAX_POSTERS; n++)); do
+      ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
+      ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.10" | bc)";  
+      if [ $(echo "scale=2; $ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi   #must add leading zero if ffmpeg_ssAt is less than 1.00
 
-      for ((n=1; n<=$MAX_POSTERS; n++)); do
-        ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
-        ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_POSTERS*$n)-0.1" | bc)"
-		    if [ $(echo "scale=2;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
+      case $posterStyle in  
+      'style1')
+        #A SolidColor as Background
         ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
-               -frames:v 1 -q:v 2 \
-               "$_temp/_temp$n.png" -y -loglevel error
-        ffmpeg -i "$_temp/_temproundteaser.png" -i "$_temp/_temp$n.png" -i "${f%.*}/Clearlogo.png" \
-               -filter_complex "[1]scale=-1:970,eq=brightness=0.2:contrast=1:saturation=1.5,crop=720:970:160:in_h,drawbox=x=0:y=0:w=720:h=990:color=$colorPosterBg@1:t=20[still]; \
-                                [2]scale=-1:404[logo]; \
-                                [0][still]overlay=0:${teaserData[0]}[partial]; \
-                                [partial][logo]overlay=${teaserData[3]}$inHDR_overlay" -q:v 1 \
-               "$_temp/poster$n.png" -y -loglevel error
-		    rm -f "$_temp/_temp$n.png"
-      done
-      rm -f "$_temp/_temproundteaser.png" ;;
-    esac
+               -filter_complex "null" \
+               -frames:v 1 -q:v 1 \
+               "$_temp/_tempStill$n.png" -y -loglevel error #$colorPosterBg
+
+        ffmpeg -i "$_temp/_tempRoundCornerBg.png" -i "$_temp/_tempStill$n.png" -i "$clearlogo_imagefolder" \
+               -filter_complex "[1]$ffmpeg_scale,$ffmpeg_eq,$ffmpeg_stillTransform[still]; \
+                                [2]scale=-1:404[clearlogo]; \
+                                [0][still]overlay=$still_xy,drawbox=$clearlogoDeco_xy_w_h:color='$color4'@0.8:thickness=fill$randomDrawboxDeco[partial]; \
+                                [partial][clearlogo]overlay=$clearLogo_xy$drawbox_inHDR$drawtext_inHDR" -q:v 1 \
+               "$_temp/poster$n.png" -y -loglevel error  ;;
+      'style2')
+        #A StillFrame as Background
+        ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
+                -filter_complex "crop=in_w/2:in_h,eq=brightness=0.2:contrast=1:saturation=3,$ffmpeg_roundcorner,$drawbox_teaser,$drawtext_teaser,\
+                                 drawbox=$clearlogoDeco_xy_w_h:color='$colorPosterBg'@0.3:thickness=fill$randomDrawboxDeco" \
+                -frames:v 1 -q:v 1 \
+                "$_temp/_tempStill$n.png" -y -loglevel error
+
+        ffmpeg -i "$_temp/_tempStill$n.png" -i "$clearlogo_imagefolder" \
+               -filter_complex "[1]scale=-1:404[clearlogo]; \
+                                [0][clearlogo]overlay=$clearLogo_xy$drawbox_inHDR$drawtext_inHDR" \
+               -q:v 1 \
+               "$_temp/poster$n.png" -y -loglevel error  ;;      
+      esac              
+      rm -f "$_temp/_tempStill$n.png"
+    done # n <1..$MAX_POSTERS
+
+    rm -f "$_temp/_tempRoundCornerBg.png"
+    rm -f "$_temp/ClearlogoRotated.png" 
+
     pick_a_poster=$((2 % $MAX_POSTERS))
     mv "$_temp/poster$(echo "$pick_a_poster + 1" | bc).png" "${f%.*}/Poster.png"    
     ProcedureEchoFeedback 'POSTER_DONE' $n
+
+    logger+=("  posterStyle--> $posterStyle")
+    logger+=("POSTER_(DONE)")
 	fi
   #End Poster Images
 
 
   #Background/Backdrop Images Begin
   if [[ ! "${typed_arguments,,}" == *"-noback"* ]]; then
-    if [[ "${typed_arguments,,}" == *"-rgb"* ]]
+    if [[ "${typed_arguments,,}" == *"-dorgb"* ]]
     then
       eqR="eq=gamma_r=4:gamma_g=1:gamma_b=0,hue=s=10"; eqG="eq=gamma_r=0.2:gamma_g=1.1:gamma_b=0";
       eqB="eq=gamma_r=0:gamma_g=0.7:gamma_b=10";       eqC="eq=gamma_r=0.2:gamma_g=2:gamma_b=6";
@@ -506,28 +581,32 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
     else
       hue="hue=s=2" ;eqR=$hue;eqG=$hue;eqB=$hue;eqC=$hue;eqM=$hue;eqV=$hue;eqY=$hue;eqT=$hue;eqS=$hue;eqP=$hue;eqK=$hue;eqG2=$hue;
     fi
-    ffmpeg_eqRandom=( $(shuf -e $eqR $eqG $eqB $eqC $eqM $eqV $eqY $eqT $eqS $eqP $eqG2 $eqK) ) 
+    ffmpeg_eqRandom=( $(shuf -e $eqR $eqG $eqB $eqC $eqM $eqV $eqY $eqT $eqS $eqP $eqG2 $eqK) );  
+    logger+=("BACKDROPS_(START)");
     for ((n=1; n<=$MAX_BACKDROPS; n++)); do
       ProcedureEchoFeedback 'BACKGROUND_WORK' 'Working on background image' $n $MAX_BACKDROPS
-      ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_BACKDROPS*$n)-0.1" | bc)";  if [ $(bc <<< "$ffmpeg_ssAt < 1.00") -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
-      ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" -vf "${ffmpeg_eqRandom[$n]},scale=2160:-1" -vframes 1 -q:v 2 -loglevel error "${f%.*}/backdrop$n.jpg" -y
+      ffmpeg_ssAt="$(echo "scale=2; ($ffprobe_duration/$MAX_BACKDROPS*$n)-0.1" | bc)";  
+      if [ $(bc <<< "$ffmpeg_ssAt < 1.00") -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi
+      ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" -vf "${ffmpeg_eqRandom[$n]},scale=2160:-1" -vframes 1 -q:v 2 "${f%.*}/backdrop$n.jpg" -y -loglevel error
     done
     ProcedureEchoFeedback 'BACKGROUND_DONE' $n
+    logger+=("  ffmpeg_eqRandom--> $ffmpeg_eqRandom")    
+    logger+=("BACKDROPS_(DONE)")    
   fi
   #End Background Images
 
   #Begin Metadata
   if [[ ! "${typed_arguments,,}" == *"-nometa"* ]]; then 
-    ProcedureEchoFeedback 'METAFILE_WORK' 'Now the editable metadata file...'
-    #echo -e -n "${RED}METAFILE    :${NC} Now the editable metadata file..."
+    ProcedureEchoFeedback 'METAFILE_WORK' 'Now the editable metadata file...'; logger+=("METAFILE_(START)")
 
     default_plot="<![CDATA[Enjoy '${streams_stream_0_nb_frames}' frames of awesome content in '${format_duration}' of duration.]]>"
     if [ ! -f  "$1/plots.txt" ]; then
       IFS=$'\n'    
       if (dpkg -s xidel &> /dev/null) && (dpkg -s libssl-dev &> /dev/null); then
         html=($(xidel -s 'https://www.imdb.com/list/ls052725661' -e '//div[@class="ipc-html-content-inner-div"]' )) #-silent and -extract
+        logger+=("  xidel used on $html to create $1/plots.txt")
         for ((i=0; i < ${#html[@]}; i+=1)); do
-            echo -e "<![CDATA["${html[i]}"]]>" >> "$1/plots.txt"
+          echo -e "<![CDATA["${html[i]}"]]>" >> "$1/plots.txt"
         done
       else
         echo -e $default_plot >> "$1/plots.txt"
@@ -537,22 +616,29 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
     fi
     if [ -f "$1/plots.txt" ]; then readarray -t PLOTS < "$1/plots.txt"; else PLOTS=($default_plot); fi
     rating=( $(shuf -e 7 8 9 10) )
-    decade=( $(shuf -e 1980 1990 2000 2010 2020) ) 
+    decade=( $(shuf -e 1980 1990 2000 2010 ) ) 
     digit=( $(shuf -e 0 1 2 3 4 5 6 7 8 9) )
-    if [ $COUNTER -eq 1 ]; then #do  random shuffle only one time
-      plot=( $(shuf -e $(seq 0 $(bc <<<"${#PLOTS[@]} - 1") ) ) )  
-      actor=( $(shuf -e $(seq 0 $(bc <<<"${#ACTORS[@]} - 1") ) ) )
-      role=( $(shuf -e $(seq 0 $(bc <<<"${#ROLES[@]} - 1") ) ) ) 
-      director=( $(shuf -e $(seq 0 $(bc <<<"${#DIRECTORS[@]} - 1") ) ) )
-      genre=( $(shuf -e $(seq 0 $(bc <<<"${#GENRES[@]} - 1") ) ) )
-      studio=( $(shuf -e $(seq 0 $(bc <<<"${#STUDIOS[@]} - 1") ) ) )
-      tag=( $(shuf -e $(seq 0 $(bc <<<"${#SEARCH_TAGS[@]} - 1") ) ) )
-      trailer=( $(shuf -e $(seq 0 $(bc <<<"${#TRAILER_IDS[@]} - 1") ) ) )
-    fi
+    index_plot=( $(shuf -e $(seq 0 $(echo ${#PLOTS[@]}-1 | bc ) ) ) )   #www.imdb.com/list/ls05272566 or www.imdb.com/list/ls052725672/
+    index_director=( $(shuf -e $(seq 0 $(echo ${#DIRECTORS[@]}-1 | bc ) ) ) )
+    index_studio=( $(shuf -e $(seq 0 $(echo ${#STUDIOS[@]}-1 | bc ) ) ) )     
+    index_actor1=( $(shuf -e $(seq 0 $(echo ${#ACTORS[@]}-1 | bc ) ) ) )
+    index_actor2=( $(shuf -e $(seq 0 $(echo ${#ACTORS[@]}-1 | bc ) ) ) )
+    until [[ $index_actor1 -ne $index_actor2 ]]; do index_actor2=( $(shuf -e $(seq 0 $(echo ${#ACTORS[@]}-1 | bc ) ) ) ); done  
+    index_role1=( $(shuf -e $(seq 0 $(echo ${#ROLES[@]}-1 | bc ) ) ) )
+    index_role2=( $(shuf -e $(seq 0 $(echo ${#ROLES[@]}-1 | bc ) ) ) )
+    until [[ $index_role1 -ne $index_role2 ]]; do index_role2=( $(shuf -e $(seq 0 $(echo ${#ROLES[@]}-1 | bc ) ) ) ); done
+    index_genre1=( $(shuf -e $(seq 0 $(echo ${#GENRES[@]}-1 | bc ) ) ) )
+    index_genre2=( $(shuf -e $(seq 0 $(echo ${#GENRES[@]}-1 | bc ) ) ) )
+    until [[ $index_genre1 -ne $index_genre2 ]]; do index_genre2=( $(shuf -e $(seq 0 $(echo ${#GENRES[@]}-1 | bc ) ) ) ); done
+    index_searchTag1=( $(shuf -e $(seq 0 $(echo ${#SEARCH_TAGS[@]}-1 | bc ) ) ) )
+    index_searchTag2=( $(shuf -e $(seq 0 $(echo ${#SEARCH_TAGS[@]}-1 | bc ) ) ) )
+    until [[ $index_searchTag1 -ne $index_searchTag2 ]]; do index_searchTag2=( $(shuf -e $(seq 0 $(echo ${#SEARCH_TAGS[@]}-1 | bc ) ) ) ); done
+    index_trailerID=( $(shuf -e $(seq 0 $(echo ${#TRAILER_IDS[@]}-1 | bc ) ) ) )
+
     if [[ ! "${typed_arguments,,}" == *"-notrailer"* ]]; then
-      trailer_elementDisabledOpen="<!--Disabled  "
-      trailer_elementDisabledClose="  Disabled-->"
-    fi      
+      trailer_elementDisabledOpen="<!-- "
+      trailer_elementDisabledClose=" -->"
+    fi   
     printf "<?xml version='1.0' encoding='utf-8' standalone='yes'?>
 <movie>
   <title>${base_name[@]}</title>
@@ -563,25 +649,42 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
   <mpaa>Not $classificationLetter</mpaa>
   <dateadded>2021</dateadded>
   <tagline>Overview</tagline>
-  <plot>${PLOTS[${plot[$COUNTER]}]}
+  <plot>
+    ${PLOTS[$index_plot]}
   </plot>
   <actor>
-    <name>${ACTORS[${actor[$(bc <<<"2*$COUNTER-1")]}]}</name>
-    <role>${ROLES[${role[$(bc <<<"2*$COUNTER")]}]}</role>
+    <name>${ACTORS[$index_actor1]}</name>
+    <role>${ROLES[$index_role1]}</role>
   </actor>
   <actor>
-    <name>${ACTORS[${actor[$(bc <<<"2*$COUNTER-2")]}]}</name>
-    <role>${ROLES[${role[$(bc <<<"2*$COUNTER")]}]}</role>
+    <name>${ACTORS[$index_actor2]}</name>
+    <role>${ROLES[$index_role2]}</role>
   </actor>
-  <director>${DIRECTORS[${director[$COUNTER]}]}</director>
-  <genre>${GENRES[${genre[$COUNTER]}]}</genre>
-  <genre>${GENRES[${genre[$COUNTER+2]}]}</genre>
-  <studio>${STUDIOS[${studio[$COUNTER]}]}</studio>
-  <tag>${SEARCH_TAGS[${tag[$COUNTER]}]}</tag>
-  <tag>${SEARCH_TAGS[${tag[$COUNTER+1]}]}</tag>
-  $trailer_elementDisabledOpen<trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[${trailer[$COUNTER]}]}</trailer>$trailer_elementDisabledClose
+  <genre>${GENRES[$index_genre1]}</genre>
+  <genre>${GENRES[$index_genre2]}</genre>
+  <director>${DIRECTORS[$index_director]}</director>  
+  <studio>${STUDIOS[$index_studio]}</studio>
+  <tag>${SEARCH_TAGS[$index_searchTag1]}</tag>
+  <tag>${SEARCH_TAGS[$index_searchTag2]}</tag>
+  $trailer_elementDisabledOpen<trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=${TRAILER_IDS[$index_trailerID]}</trailer>$trailer_elementDisabledClose
 </movie>" > "${f%.*}/${base_name[@]}"'.nfo'
     ProcedureEchoFeedback 'METAFILE_DONE'
+    logger+=("  rating[1]         --> ${rating[1]}=<rating>")
+    logger+=("  rating[2].digit[2]--> ${rating[2]}.${digit[2]}=<criticrating>")
+    logger+=("  decade[1]+digit[1]--> ${decade[1]}+${digit[1]} =<year>")    
+    logger+=("  index_plot        --> $index_plot, ${PLOTS[$index_plot]:0:48}...")
+    logger+=("  index_actor1      --> $index_actor1, ${ACTORS[$index_actor1]}")
+    logger+=("  index_role1       --> $index_role1, ${ROLES[$index_role1]}")
+    logger+=("  index_actor2      --> $index_actor2, ${ACTORS[$index_actor2]}")
+    logger+=("  index_role2       --> $index_role2, ${ROLES[$index_role2]}")
+    logger+=("  index_genre1      --> $index_genre1, ${GENRES[$index_genre1]}")
+    logger+=("  index_genre2      --> $index_genre2, ${GENRES[$index_genre2]}")
+    logger+=("  index_director    --> $index_director, ${DIRECTORS[$index_director]}")      
+    logger+=("  index_studio      --> $index_studio, ${STUDIOS[$index_studio]}")  
+    logger+=("  index_searchTag1  --> $index_searchTag1, ${SEARCH_TAGS[$index_searchTag1]}")
+    logger+=("  index_searchTag2  --> $index_searchTag2, ${SEARCH_TAGS[$index_searchTag2]}")
+    logger+=("  index_trailerID   --> $trailer_elementDisabledOpen $index_trailerID, ${TRAILER_IDS[$index_trailerID]} $trailer_elementDisabledClose")
+    logger+=("METAFILE_(DONE)")
   fi
   #End Metadata
 
@@ -592,26 +695,27 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
     CLIP_DURATIONSECS="3.00"
     CLIP_SPANSECS="5.00"
 
-    ProcedureEchoFeedback 'TRAILER' 'Generating a random rate screen for this film...'
+    ProcedureEchoFeedback 'TRAILER' 'Generating a random rate screen for this film...';  logger+=("TRAILER_(START)")
     RATE_TITLE=('THE FOLLOWING FEATURE HAS NOT BEEN RATED' 'THIS PREVIEW HAS NOT BEEN RATED' 'THIS MOTION FILM NAS NOT BEEN RATED')
     idx=( $(shuf -e $(seq 0 $(bc <<<"${#RATE_TITLE[@]}-1") ) ) )
     rate_title=${RATE_TITLE[$idx]}
+    logger+=("  idx/rate_title  --> $idx/$rate_title")    
 
-    dataset1=( $(shuf -e 'Because Some Material|May Be Insanely Memorable|For Unprepared Viewers|' \
+    dsReason=( $(shuf -e 'Because Some Material|May Be Insanely Memorable|For Unprepared Viewers|' \
                          'Due to Over-emotional,|Intense, Undisturbing|Graphic Material|' \
                          'For Fool Scences,|Mild Appropiate Dialogs,|and Goofy Language|' \
                          'For Inoffensive Scenes|Fool and Goofy|Mild Expressions|' \
                          'Due to Implicit Content|Showing Scences Full Of|Memory and Happiness|') )
-    IFS="|" read -r rateLine1 rateLine2 rateLine3 foo_unused_but_required_as_stopper_due_to_wspaces <<< "${dataset1[@]}"
+    IFS="|" read -r rateLine1 rateLine2 rateLine3 foo_unused_but_required_as_stopper_due_to_wspaces <<< "${dsReason[@]}"
 
     case $classificationLetter in
-      'G'    ) dataset2=('green|w*0.251|h*0.194|0.15|black|white|General Audiences Admitted|white|') ;;
-      'PG'   ) dataset2=('maroon|w*0.236|h*0.213|0.10|red|yellow|Family Guidance Suggested|yellow|') ;;
-      'PG-13') dataset2=('purple|w*0.218|h*0.241|0.06|11235A|F6ECA9|Unrestricted Under 13|F6ECA9|') ;;
-      'R'    ) dataset2=('darkblue|w*0.251|h*0.194|0.15|black|white|Restricted Audiences|white|') ;;
-      'NR'   ) dataset2=('black|w*0.236|h*0.213|0.10|white|maroon|Content Has Not Been Rated|white|') ;;
+      'G'    ) dsClassification=('green|w*0.251|h*0.194|0.15|black|white|General Audiences Admitted|white|') ;;
+      'PG'   ) dsClassification=('maroon|w*0.236|h*0.213|0.10|red|yellow|Family Guidance Suggested|yellow|') ;;
+      'PG-13') dsClassification=('purple|w*0.218|h*0.241|0.06|11235A|F6ECA9|Unrestricted Under 13|F6ECA9|') ;;
+      'R'    ) dsClassification=('darkblue|w*0.251|h*0.194|0.15|black|white|Restricted Audiences|white|') ;;
+      'NR'   ) dsClassification=('black|w*0.236|h*0.213|0.10|white|maroon|Content Has Not Been Rated|white|') ;;
     esac
-    IFS="|" read -r screenColor letterX letterY letterFontSize letterBgColor letterTextColor classificationLineText classificationLineTextColor foo_unused_but_required_as_stopper_due_to_wspaces <<< "${dataset2[@]}"      
+    IFS="|" read -r screenColor letterX letterY letterFontSize letterBgColor letterTextColor classificationLineText classificationLineTextColor foo_unused_but_required_as_stopper_due_to_wspaces <<< "${dsClassification[@]}"      
     
     _temp="${f%.*}/_temp"
     if [ ! -f "logo-mpaa.png" ]; then
@@ -625,9 +729,10 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
       source_url='https://filesamples.com/samples/audio/mp3/sample'$melodyIndex'.mp3'  
       curl -o "$output_file" $source_url -s 
     fi
+    logger+=("  melodyIndex     --> $melodyIndex")
     
-    rateScreenFontName="ArchivoBlack-Regular"
-    classificationFontName="SigmarOne-Regular"      
+    rateScreenFontName="Archivo Black"
+    classificationFontName="Sigmar One"      
     rateTextBorder='bordercolor=black:borderw=1:shadowx=3:shadowy=3'
     if [ $(echo "$ffprobe_height <= 1080" | bc ) ]; then logoScale=0.8; else logoScale=3.1; fi
     ffmpeg -f lavfi -i color=c=$screenColor@0.8:duration=$CLIP_DURATIONSECS:s=$ffprobe_width"x"$ffprobe_height:r=$ffprobe_frame_rate -i logo-mpaa.png -f lavfi -t $CLIP_DURATIONSECS -i anullsrc \
@@ -654,7 +759,7 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
            -filter_complex "[1:v]scale=620:404[clearlogo],\
                             [0:v][clearlogo]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2-60,\
                             drawbox=x=0:y=(ih-60):w=$ffprobe_width:h=60:color=$color1@1:thickness=fill:enable='between(t,0,$CLIP_DURATIONSECS)', \
-                            drawtext=text='$teaser ($dynamicRange)':fontcolor='$color3':fontfile='$rateScreenFontName':bordercolor=$color4:borderw=1:x=(w-text_w)/2:y=(h-50):fontsize=30" \
+                            drawtext=text='$TEASER ($dynamicRange)':fontcolor='$color3':fontfile='$rateScreenFontName':bordercolor=$color4:borderw=1:x=(w-text_w)/2:y=(h-50):fontsize=30" \
           "$_temp/_tempLogo.mp4" -y -loglevel error
     echo "file '_tempLogo.mp4'" >> "$_temp/_tempClips.txt"
   
@@ -695,27 +800,28 @@ echo "\$i=$i,  fontName="$fontName",    fontData="$charCount"|"$fontSize"|"$pixe
     mv "$_temp/_tempRating.mp4" "${f%.*}/${base_name[@]}-rating.mp4"
     rm -f -- "$_temp"/_temp*.*    
     ProcedureEchoFeedback "TRAILER_DONE"
-
+    logger+=("TRAILER_(DONE)")
   fi
   #End Movie Trailer
 
   #Background Audio Begin
   if [[ ! "${typed_arguments,,}" == *"-nomusic"* ]] && [ $COUNTER -lt 6 ]; then
-    ProcedureEchoFeedback 'THEME_WORK' ' Creating theme song (limited to 5)...'
+    ProcedureEchoFeedback 'THEME_WORK' ' Creating theme song (limited to 5)...';  logger+=("THEME_(START)")
     output_file="$1"/${base_name[@]}"/theme.mp3"   #"Rich Demo/Cancun Family Trip/theme.mp3"  
     source_url='https://filesamples.com/samples/audio/mp3/sample'$COUNTER'.mp3'  
     curl -o "$output_file" $source_url -s      
-    ProcedureEchoFeedback 'THEME_DONE'
+    ProcedureEchoFeedback 'THEME_DONE';   logger+=("THEME_(DONE)")
   else
     echo -e "${RED}THEME AUDIO :${NC} ...${RED}SKIPPED!${NC}"  
   fi
   #End Background Audio
 
   if [ -z "$( ls -A "${f%.*}/_temp" )" ]; then  #_temp directory is empty
-    rm -Rf "${f%.*}/_temp"
+    rm -Rf "${f%.*}/_temp"   #"${f%.*}/_temp"
   fi
 
-  echo  
+  echo
+  printf '%s\n' "${logger[@]}" > "$_temp/_log.txt" 
   let COUNTER++
 done
 #End Richerize Process
@@ -729,4 +835,4 @@ echo -e "SUMMARY: At least ${count} images and other assets were created to enha
 #End Summary and clean-up
 
 #EOF
-#Inspiration: AskUbuntu-Iterate over files in directory, create folders based on file names and move files into respective folders
+#Script's starting point: AskUbuntu-Iterate over files in directory, create folders based on file names and move files into respective folders
