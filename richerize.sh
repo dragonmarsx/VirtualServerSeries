@@ -416,25 +416,25 @@ for f in "$1"/*; do
       1)  mv "$_temp/_tempClearlogo0.png" "$_temp/_tempClearlogo.png";; 
 
       2)  ffmpeg -i "$_temp/_tempClearlogo0.png" -i "$_temp/_tempClearlogo1.png" \
-                  -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
-                  "$_temp/_tempClearlogo.png" -y -loglevel error ;;
+                 -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
+                 "$_temp/_tempClearlogo.png" -y -loglevel error ;;
 
       3)  ffmpeg -i "$_temp/_tempClearlogo0.png" -i "$_temp/_tempClearlogo1.png" \
-                  -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
-                  "$_temp/_tempDraw01.png" -y -loglevel error  
+                 -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
+                 "$_temp/_tempDraw01.png" -y -loglevel error  
           ffmpeg -i "$_temp/_tempDraw01.png" -i "$_temp/_tempClearlogo2.png" \
-                  -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
-                  "$_temp/_tempClearlogo.png" -y -loglevel error ;;
+                 -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
+                 "$_temp/_tempClearlogo.png" -y -loglevel error ;;
 
       4)  ffmpeg -i "$_temp/_tempClearlogo0.png" -i "$_temp/_tempClearlogo1.png" \
-                  -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
-                  "$_temp/_tempDraw01.png" -y -loglevel error  
+                 -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
+                 "$_temp/_tempDraw01.png" -y -loglevel error  
           ffmpeg -i "$_temp/_tempDraw01.png" -i "$_temp/_tempClearlogo2.png" \
-                  -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
-                  "$_temp/_tempDraw02.png" -y -loglevel error
+                 -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
+                 "$_temp/_tempDraw02.png" -y -loglevel error
           ffmpeg -i "$_temp/_tempDraw02.png" -i "$_temp/_tempClearlogo3.png" \
-                  -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
-                  "$_temp/_tempClearlogo.png" -y -loglevel error ;;
+                 -filter_complex "$ffmpeg_filter_complex" -vframes 1 \
+                 "$_temp/_tempClearlogo.png" -y -loglevel error ;;
     esac 
     mv "$_temp/_tempClearlogo.png" "${f%.*}/Clearlogo.png" 
     rm -f -- "$_temp"/_temp*.*
@@ -451,7 +451,7 @@ for f in "$1"/*; do
     ffmpeg -i "$_temp/_temp360x282.png" -i "${f%.*}/Clearlogo.png" \
            -filter_complex "[1]scale=-1:180[clearlogo];
                             [0][clearlogo]overlay=30:54,rotate=-$clearlogoRotationAngle*PI/180,crop=310:202" \
-            -vframes 1 \
+           -vframes 1 \
            "$_temp/ClearlogoRotated.png" -y -loglevel error 
     rm -f "$_temp/_temp360x282.png"       
      
@@ -781,8 +781,8 @@ for f in "$1"/*; do
         echo "file '_tempClip$n.mp4'" >> "$_temp/_tempClips.txt"
         ffmpeg -ss $ffmpeg_ssTo -i "${ffmpeg_i[@]}" -vframes 1 -q:v 2 "$_temp/_tempClipTail$n.jpg" -y -loglevel error
         ffmpeg -loop 1 -framerate $ffprobe_frame_rate -i "$_temp/_tempClipTail$n.jpg" -f lavfi -t $CLIP_DURATIONSECS -i anullsrc \
-                -filter_complex "zoompan=z='zoom+0.006':x=iw/2-(iw/zoom/2):y=ih/2-(ih/zoom/2):d=6*$ffprobe_frame_rate:s=$ffprobe_width"x"$ffprobe_height:fps=$ffprobe_frame_rate" \
-                -t 2 -c:v libx264 -pix_fmt yuv420p \
+               -filter_complex "zoompan=z='zoom+0.006':x=iw/2-(iw/zoom/2):y=ih/2-(ih/zoom/2):d=6*$ffprobe_frame_rate:s=$ffprobe_width"x"$ffprobe_height:fps=$ffprobe_frame_rate" \
+               -t 2 -c:v libx264 -pix_fmt yuv420p \
         "$_temp/_tempClipTail$n.mp4" -y -loglevel error
         rm -f "$_temp/_tempClipTail$n.jpg"
       else #clipTail frozen 
