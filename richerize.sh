@@ -51,7 +51,7 @@ function ProcedureEchoFeedback () {
     'THEME_WORK'     ) echo -ne "${YELLOW}THEME AUDIO : ${NC}$2\033[0K" ;;
 
     'LOGO_DONE'      ) echo -ne "${RED}LOGO        : ${NC}Logo for the film and poster created.  ${RED}DONE!${NC}\n" ;;
-    'POSTER_DONE'    ) echo -ne "${RED}POSTERS     : ${YELLOW}$(echo "$n-1" | bc)${NC} image posters created. ${RED}DONE!${NC}. Other ${YELLOW}$(echo "$n-2" | bc)${NC} in /_temp directory maybe more appealing.\n" ;;
+    'POSTER_DONE'    ) echo -ne "${RED}POSTERS     : ${YELLOW}$(echo "$n-1" | bc)${NC} image posters created. ${RED}DONE!${NC}. Other ${YELLOW}$(echo "$n-2" | bc)${NC} in /_temp directory might be more appealing.\n" ;;
     'BACKGROUND_DONE') echo -ne "${RED}BACKGROUNDS : ${YELLOW}$2${NC} background images created.  ${RED}DONE!${NC}\n" ;;
     'METAFILE_DONE'  ) echo -ne "${RED}METAFILE    : ${NC}Metafile with extension nfo sucessfully created.  ${RED}DONE!${NC}\n" ;;
     'THEME_DONE'     ) echo -ne "${RED}THEME AUDIO : ${NC}Thematic background audio file sucessfully created.  ${RED}DONE!${NC}\n" ;;
@@ -235,6 +235,8 @@ read
 COUNTER=1
 for f in "$1"/*; do
   logger=(); unset logger[@]; expansionExpressionReplaceSpacewComma="${recognized_args[@]// /,}"; expansionExpressionReplaceSpacewComma=${recognized_args[@]/%/ ,}0
+  logger+=("NOTE:  This log file is for diagnostic purposes. It is safe to delete as it does not affect playback functionality.")
+  logger+=("MAX_POSTERS=$MAX_POSTERS,  MAX_BACKDROPS=$MAX_BACKDROPS")
   logger+=("COMMAND_ARGUMENTS: $expansionExpressionReplaceSpacewComma")  #IFS=, echo "${recognized_args[@]}"
 
   #Begin Move File and Chapterize(s)
@@ -275,7 +277,7 @@ for f in "$1"/*; do
   #Move File(s) and Chapterize End
 
   #Begin File Profile
-  eval $(ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=codec_name,width,height,display_aspect_ratio,pix_fmt,color_range,color_primaries,color_space,color_transfer,r_frame_rate,nb_read_packets -of flat=s=_ "${ffmpeg_i[@]}")
+  eval $(ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=codec_name,width,height,display_aspect_ratio,pix_fmt,color_range,color_primaries,color_space,color_transfer,bit_rate,r_frame_rate,nb_read_packets -of flat=s=_ "${ffmpeg_i[@]}")
   ffprobe_width=$streams_stream_0_width
   ffprobe_height=$streams_stream_0_height  
   ffprobe_codec_name=$streams_stream_0_codec_name             #h264
@@ -285,6 +287,7 @@ for f in "$1"/*; do
   ffprobe_color_transfer=$streams_stream_0_color_transfer     #Transfer characteristics
   ffprobe_color_space=$streams_stream_0_color_space           #Matrix coefficients
   ffprobe_aspect_ratio=$streams_stream_0_display_aspect_ratio #"4:3"
+  ffprobe_bit_rate_kbps="$(echo "scale=0; $streams_stream_0_bit_rate/1000" | bc )" 
   ffprobe_frame_rate="$(echo "scale=0; $streams_stream_0_r_frame_rate*1" | bc )"
   ffprobe_frames=$streams_stream_0_nb_read_packets
   ffprobe_duration=$(ffprobe -loglevel error -of csv=p=0 -show_entries format=duration "${ffmpeg_i[@]}")
@@ -293,8 +296,8 @@ for f in "$1"/*; do
     dynamicRange="in HDR"
   fi
   classificationLetter=( $(shuf -e 'G' 'PG' 'PG-13' 'R' 'G' 'NR' 'PG-13' 'PG'))
-  echo -e "${RED}METADATA    :${NC} $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs w/$ffprobe_frames frames @$ffprobe_frame_rate"fps $dynamicRange. Not $classificationLetter"
-  logger+=("METADATA: $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs_w/$ffprobe_frames_frames,@$ffprobe_frame_rate"fps $dynamicRange. Not $classificationLetter")
+  echo -e "${RED}METADATA    :${NC} $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs w/$ffprobe_frames frames @$ffprobe_frame_rate"fps, $ffprobe_bit_rate_kbps"kbps" $dynamicRange. Not $classificationLetter"
+  logger+=("METADATA: $ffprobe_width"w×"$ffprobe_height"h" $ffprobe_aspect_ratio-$ffprobe_codec_name-$ffprobe_duration"secs_w/$ffprobe_frames_frames,@$ffprobe_bit_rate_kbps"fps, $ffprobe_bit_rate_kbps"kbps" $dynamicRange. Not $classificationLetter")
   #File Profile End
 
   #Begin Coordinating Color Palette for use in Logo and Poster(s)
@@ -341,14 +344,14 @@ for f in "$1"/*; do
     ds03=('0|0|0|MC|OK|Jersey 25'      '1|98|66'  '2|98|66' '3|94|64' '4|90|62' '5|90|62'  '6|90|62'  '7|88|60' '8|86|62' '9|80|58' '10|72|58' '11|64|50' '12|56|42' '13|52|42' '14|52|44' '15|50|44' '16|44|38' '17|40|34' '18|38|34' '19|34|28' '20|34|30')
     ds04=('1|1|0|MC|OK|Darumadrop One' '1|104|68' '2|98|68' '3|96|68' '4|92|68' '5|100|72' '6|100|68' '7|78|52' '8|72|52' '9|70|56' '10|58|46' '11|58|50' '12|50|42' '13|44|38' '14|42|36' '15|40|34' '16|38|36' '17|36|34' '18|34|34' '19|30|30' '20|30|28')
     ds05=('0|1|0|MC|OK|Archivo Black'  '1|90|70'  '2|88|66' '3|84|66' '4|84|70' '5|82|68'  '6|80|64'  '7|64|60' '8|64|62' '9|54|52' '10|48|48' '11|46|46' '12|40|40' '13|36|36' '14|34|34' '15|32|34' '16|30|30' '17|28|30' '18|28|30' '19|26|28' '20|22|24')
-    ds06=('1|1|0|MC|OK|Slackey'        '1|80|64'  '2|86|74' '3|84|68' '4|80|68' '5|80|66'  '6|68|56'  '7|62|50' '8|52|46' '9|50|48' '10|42|40' '11|44|42' '12|40|40' '13|32|30' '14|32|32' '15|28|30' '16|26|26' '17|26|26' '18|24|26' '19|22|24' '20|20|22')
-    ds07=('1|1|0|MC|OK|Chewy'          '1|84|68'  '2|84|78' '3|82|78' '4|84|78' '5|82|78'  '6|68|60'  '7|60|56' '8|58|56' '9|60|52' '10|60|60' '11|60|60' '12|58|52' '13|48|44' '14|46|44' '15|44|44' '16|40|40' '17|34|41' '18|30|36' '19|30|36' '20|30|36')
+    ds06=('1|1|0|MC|OK|Slackey'        '1|80|64'  '2|86|74' '3|84|68' '4|80|68' '5|80|66'  '6|68|56'  '7|62|50' '8|52|46' '9|50|48' '10|42|40' '11|38|38' '12|36|36' '13|32|30' '14|32|32' '15|28|30' '16|26|26' '17|26|26' '18|24|26' '19|22|24' '20|20|22')
+    ds07=('1|1|0|MC|OK|Chewy'          '1|84|68'  '2|84|78' '3|82|78' '4|84|78' '5|82|78'  '6|68|60'  '7|60|56' '8|60|56' '9|60|52' '10|58|58' '11|54|54' '12|52|52' '13|48|44' '14|46|44' '15|44|44' '16|40|40' '17|34|41' '18|30|36' '19|30|36' '20|30|36')
     ds08=('1|0|0|UP|OK|Bungee'         '1|90|72'  '2|88|68' '3|86|68' '4|88|68' '5|84|68'  '6|68|56'  '7|60|48' '8|54|44' '9|48|40' '10|44|38' '11|42|36' '12|38|32' '13|34|30' '14|32|28' '15|30|26' '16|28|26' '17|26|24' '18|24|24' '19|22|20' '20|22|20')
     ds09=('1|0|0|UP|NA|Pixeldead'      '1|88|70'  '2|88|66' '3|88|68' '4|88|72' '5|88|78'  '6|82|70'  '7|72|56' '8|62|50' '9|60|50' '10|50|48' '11|48|42' '12|42|40' '13|40|36' '14|36|34' '15|34|34' '16|32|32' '17|28|26' '18|32|34' '19|30|30' '20|26|26')
     ds10=('1|0|0|UP|OK|Nosifer'        '1|90|72'  '2|86|78' '3|88|80' '4|86|80' '5|58|60'  '6|52|58'  '7|48|54' '8|42|50' '9|36|44' '10|34|40' '11|34|40' '12|30|34' '13|26|32' '14|26|34' '15|24|30' '16|22|28' '17|22|28' '18|20|24' '19|18|24' '20|16|22')
     ds11=('1|0|0|UP|OK|Arco'           '1|86|68'  '2|86|68' '3|84|68' '4|82|68' '5|78|64'  '6|70|60'  '7|54|46' '8|52|46' '9|50|44' '10|42|38' '11|40|36' '12|36|34' '13|34|32' '14|30|28' '15|28|26' '16|28|26' '17|28|26' '18|26|26' '19|24|24' '20|22|22')
     ds12=('1|0|0|UP|OK|Sigmar One'     '1|84|76'  '2|84|66' '3|84|54' '4|84|62' '5|78|58'  '6|68|56'  '7|54|40' '8|52|44' '9|48|38' '10|42|38' '11|42|36' '12|38|32' '13|32|26' '14|30|26' '15|30|30' '16|28|24' '17|28|26' '18|26|24' '19|24|24' '20|22|20')
-    ds13=('1|1|0|UP|OK|Trade Winds'    '1|82|72'  '2|80|70' '3|80|68' '4|82|68' '5|76|68'  '6|72|62'  '7|62|60' '8|60|60' '9|58|52' '10|50|50' '11|48|48' '12|44|44' '13|38|40' '14|38|40' '15|36|40' '16|32|30' '17|30|34' '18|30|30' '19|28|28' '20|26|26')
+    ds13=('1|1|0|UP|OK|Trade Winds'    '1|82|72'  '2|80|70' '3|80|68' '4|82|68' '5|76|68'  '6|72|62'  '7|62|60' '8|60|60' '9|58|52' '10|50|50' '11|48|48' '12|42|42' '13|38|40' '14|38|40' '15|36|40' '16|32|30' '17|30|34' '18|30|30' '19|28|28' '20|26|26')
 
     dsFonts=( "ds00" "ds01" "ds02" "ds03" "ds04" "ds05" "ds06" "ds07" "ds08" "ds09" "ds10" "ds11" "ds12" "ds13" )    
     for (( n=${#dsFonts[@]}; n >=0 ; n-- )); do
@@ -464,7 +467,7 @@ for f in "$1"/*; do
     if [ ! -f  "${f%.*}/_temp" ]; then mkdir -p "${f%.*}/_temp"; fi
     _temp="${f%.*}/_temp";
 
-    idx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); TEASER=${TEASERS[$idx]};  logger+=("  idx/TEASER--> $idx/$TEASER")
+    indx=( $(shuf -e $(seq 0 $(bc <<<"${#TEASERS[@]} - 1") ) ) ); TEASER=${TEASERS[$indx]};  logger+=("  indx, TEASER--> $indx, $TEASER")
     fontNameInHDR='Sigmar One'; fontNameTeaser='Oswald'; colorPosterBg=$color1;
 
     if [[ $dynamicRange == *"HDR"* ]]; then
@@ -487,7 +490,7 @@ for f in "$1"/*; do
     fi
     logger+=("  ffmpeg_scale--> $ffmpeg_scale"); logger+=("  ffmpeg_eq--> $ffmpeg_eq"); 
     logger+=("  ffmpeg_stillTransform--> $ffmpeg_stillTransform");  logger+=("  clearlogo_imagefolder--> $clearlogo_imagefolder")
-    
+
     ds90=('55:675' '0:100'    '0:25:780:74'    'x=(w-text_w)/2:y=45'   '160:720' 'teaser@top----still@mid-----clearlogo@bottom')
     ds91=('55:10'  '0:350'    '0:950:720:90'   'x=(w-text_w)/2:y=960'  '0:0'     'clearlogo@top-still@mid-----teaser@bottom'   )
     ds92=('55:620' '0:40'     '0:1020:720:60'  'x=(w-text_w)/2:y=1030' '0:0'     'still@top-----clearlogo@mid-teaser@bottom'   )
@@ -499,11 +502,11 @@ for f in "$1"/*; do
     declare -n posterSet="$dsPosterDesign"; 
     clearLogo_xy=${posterSet[0]};   still_xy=${posterSet[1]};  drawboxTeaser_xywh=${posterSet[2]}; 
     fontTeaser_xy=${posterSet[3]};  clearlogoDeco_xy_w_h=${posterSet[4]}:$(( 320 * 2 + 20 )):$(( $clearlogoDrawboxDeco_h * 2 - 40));
-    logger+=("  dsPosterDesign--> $dsPosterDesign"); logger+=("  posterSet--> $posterSet"); 
+    logger+=("  dsPosterDesign--> $dsPosterDesign"); logger+=("  clearLogo_xy--> $clearLogo_xy"); 
 
     drawbox_bgcolor=$color4  #( $(shuf -e  $color4 $colorPosterBg $colorPosterBg ) ) 
     drawbox_teaser="drawbox=$drawboxTeaser_xywh:color='$drawbox_bgcolor'@1:thickness=fill"
-    drawtext_teaser="drawtext=text='$posterStyle$TEASER':fontcolor='$GUI_ACCENTCOLOR1':fontfile=$fontNameTeaser:$fontTeaser_xy:fontsize=h/28:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
+    drawtext_teaser="drawtext=text='$TEASER':fontcolor='$GUI_ACCENTCOLOR1':fontfile=$fontNameTeaser:$fontTeaser_xy:fontsize=h/28:bordercolor='$GUI_ACCENTCOLOR2':borderw=2"
     randomDrawboxDeco=( $(shuf -e ',drawbox=0:0:1:1' ',drawbox=0:0:1:1' ',drawbox=x=0:y=0:w=720:h=1080:color='$colorPosterBg'@1:t=2' ',drawbox=0:0:1:1' ',drawbox=x=0:y=0:w=720:h=1080:color='$colorPosterBg'@1:t=10' ))
     logger+=("  drawbox_bgcolor--> $drawbox_bgcolor"); logger+=("  randomDrawboxDeco--> $randomDrawboxDeco") 
 
@@ -518,6 +521,7 @@ for f in "$1"/*; do
     else
       posterStyle='style1'
     fi
+    logger+=("  posterStyle--> $posterStyle")    
 
     for ((n=1; n<=$MAX_POSTERS; n++)); do
       ProcedureEchoFeedback 'POSTER_WORK' 'Working on poster image' $n $MAX_POSTERS
@@ -541,7 +545,7 @@ for f in "$1"/*; do
       'style2')
         #A StillFrame as Background
         ffmpeg -ss $ffmpeg_ssAt -i "${ffmpeg_i[@]}" \
-                -filter_complex "crop=in_w/2:in_h,eq=brightness=0.2:contrast=1:saturation=3,$ffmpeg_roundcorner,$drawbox_teaser,$drawtext_teaser,\
+                -filter_complex "crop=720:1080,eq=brightness=0.2:contrast=1:saturation=3,$ffmpeg_roundcorner,$drawbox_teaser,$drawtext_teaser,\
                                  drawbox=$clearlogoDeco_xy_w_h:color='$colorPosterBg'@0.3:thickness=fill$randomDrawboxDeco" \
                 -frames:v 1 -q:v 1 \
                 "$_temp/_tempStill$n.png" -y -loglevel error
@@ -561,8 +565,7 @@ for f in "$1"/*; do
     pick_a_poster=$((2 % $MAX_POSTERS))
     mv "$_temp/poster$(echo "$pick_a_poster + 1" | bc).png" "${f%.*}/Poster.png"    
     ProcedureEchoFeedback 'POSTER_DONE' $n
-
-    logger+=("  posterStyle--> $posterStyle")
+    
     logger+=("POSTER_(DONE)")
 	fi
   #End Poster Images
@@ -691,15 +694,16 @@ for f in "$1"/*; do
 
   #Movie Trailer Begin
   if [[ ! "${typed_arguments,,}" == *"-notrailer"* ]]; then
-    MAX_TRAILER_CLIPS=3;
-    CLIP_DURATIONSECS="3.00"
-    CLIP_SPANSECS="5.00"
+    MAX_TRAILER_CLIPS=4;
+    CLIP_DURATIONSECS="7.00"
+    CLIP_SPANSECS="4.00"
 
     ProcedureEchoFeedback 'TRAILER' 'Generating a random rate screen for this film...';  logger+=("TRAILER_(START)")
     RATE_TITLE=('THE FOLLOWING FEATURE HAS NOT BEEN RATED' 'THIS PREVIEW HAS NOT BEEN RATED' 'THIS MOTION FILM NAS NOT BEEN RATED')
-    idx=( $(shuf -e $(seq 0 $(bc <<<"${#RATE_TITLE[@]}-1") ) ) )
-    rate_title=${RATE_TITLE[$idx]}
-    logger+=("  idx/rate_title  --> $idx/$rate_title")    
+    indx=( $(shuf -e $(seq 0 $(bc <<<"${#RATE_TITLE[@]}-1") ) ) )
+    rate_title=${RATE_TITLE[$indx]}
+    logger+=("  MAX_TRAILER_CLIPS=$MAX_TRAILER_CLIPS, CLIP_DURATIONSECS=$CLIP_DURATIONSECS, CLIP_SPANSECS=$CLIP_SPANSECS")
+    logger+=("  indx, rate_title --> $indx, $rate_title")  
 
     dsReason=( $(shuf -e 'Because Some Material|May Be Insanely Memorable|For Unprepared Viewers|' \
                          'Due to Over-emotional,|Intense, Undisturbing|Graphic Material|' \
@@ -709,18 +713,18 @@ for f in "$1"/*; do
     IFS="|" read -r rateLine1 rateLine2 rateLine3 foo_unused_but_required_as_stopper_due_to_wspaces <<< "${dsReason[@]}"
 
     case $classificationLetter in
-      'G'    ) dsClassification=('green|w*0.251|h*0.194|0.15|black|white|General Audiences Admitted|white|') ;;
+      'G'    ) dsClassification=('green|w*0.251|h*0.194|0.12|black|white|General Audiences Admitted|white|') ;;
       'PG'   ) dsClassification=('maroon|w*0.236|h*0.213|0.10|red|yellow|Family Guidance Suggested|yellow|') ;;
       'PG-13') dsClassification=('purple|w*0.218|h*0.241|0.06|11235A|F6ECA9|Unrestricted Under 13|F6ECA9|') ;;
-      'R'    ) dsClassification=('darkblue|w*0.251|h*0.194|0.15|black|white|Restricted Audiences|white|') ;;
+      'R'    ) dsClassification=('darkblue|w*0.251|h*0.194|0.12|black|white|Restricted Audiences|white|') ;;
       'NR'   ) dsClassification=('black|w*0.236|h*0.213|0.10|white|maroon|Content Has Not Been Rated|white|') ;;
     esac
     IFS="|" read -r screenColor letterX letterY letterFontSize letterBgColor letterTextColor classificationLineText classificationLineTextColor foo_unused_but_required_as_stopper_due_to_wspaces <<< "${dsClassification[@]}"      
     
     _temp="${f%.*}/_temp"
-    if [ ! -f "logo-mpaa.png" ]; then
-      output_file="logo-mpaa.png"
-      source_url='https://atlascinemas.net/images/rating-mpaa.png'  #338x143 --> scale ih*1.1
+    if [ ! -f "RATING-logo.png" ]; then
+      output_file="RATING-logo.png"
+      source_url='https://raw.githubusercontent.com/dragonmarsx/VirtualServerSeries/afa30684c30dc779366b71ab931b2a6b412d0d00/_resources/RATING-logo.png'
       curl -o "$output_file" $source_url -s
     fi
     melodyIndex=( $(shuf -e 4 3 2 1) )    
@@ -735,40 +739,42 @@ for f in "$1"/*; do
     classificationFontName="Sigmar One"      
     rateTextBorder='bordercolor=black:borderw=1:shadowx=3:shadowy=3'
     if [ $(echo "$ffprobe_height <= 1080" | bc ) ]; then logoScale=0.8; else logoScale=3.1; fi
-    ffmpeg -f lavfi -i color=c=$screenColor@0.8:duration=$CLIP_DURATIONSECS:s=$ffprobe_width"x"$ffprobe_height:r=$ffprobe_frame_rate -i logo-mpaa.png -f lavfi -t $CLIP_DURATIONSECS -i anullsrc \
+    RATINGCLIP_DURATIONSECS="5.0"
+    ffmpeg -f lavfi -i color=c=$screenColor@1:duration=$RATINGCLIP_DURATIONSECS:s=$ffprobe_width"x"$ffprobe_height:r=$ffprobe_frame_rate -i RATING-logo.png -f lavfi -t $RATINGCLIP_DURATIONSECS -i anullsrc \
            -filter_complex "[1:v]scale=-1:(ih*$logoScale)[ratelogo], \
                             [0:v][ratelogo]overlay=x=(main_w-overlay_w)/2:y=(main_h*0.66), \
-                            drawbox=x=(iw*0.208):y=(ih*0.160):w=(iw*0.208):h=(ih*0.210):color='$letterBgColor'@1:thickness=fill:enable='between(t,0,$CLIP_DURATIONSECS)', \
-                            drawbox=x=(iw*0.208):y=(ih*0.160):w=(iw*0.6):h=(ih*0.32):color='white'@1:t=10:enable='between(t,0,$CLIP_DURATIONSECS)', \
-                            drawbox=x=(iw*0.208):y=(ih*0.160):w=(iw*0.6):h=(ih*0.210):color='white'@1:t=5:enable='between(t,0,$CLIP_DURATIONSECS)', \
+                            drawbox=x=(iw*0.208):y=(ih*0.160):w=(iw*0.208):h=(ih*0.210):color='$letterBgColor'@1:thickness=fill:enable='between(t,0,$RATINGCLIP_DURATIONSECS)', \
+                            drawbox=x=(iw*0.208):y=(ih*0.160):w=(iw*0.6):h=(ih*0.32):color='white'@1:t=10:enable='between(t,0,$RATINGCLIP_DURATIONSECS)', \
+                            drawbox=x=(iw*0.208):y=(ih*0.160):w=(iw*0.6):h=(ih*0.210):color='white'@1:t=5:enable='between(t,0,$RATINGCLIP_DURATIONSECS)', \
                             drawtext=text='$rate_title':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w-text_w)/2:y=(h*0.10):fontsize=(w*0.030):$rateTextBorder, \
                             drawtext=text='$classificationLetter':fontcolor='$letterTextColor':fontfile='$classificationFontName':x=$letterX:y=$letterY:fontsize=(w*$letterFontSize):$rateTextBorder, \
                             drawtext=text='$(echo -e $rateLine1"\n"$rateLine2"\n"$rateLine3)':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w*0.438):y=(h*0.210+8):fontsize=(w*0.022):$rateTextBorder, \
                             drawtext=text='$classificationLineText':fontcolor='$classificationLineTextColor':fontfile='$classificationFontName':x=(w-text_w)/2:y=(h*0.40):fontsize=(w*0.03):$rateTextBorder, \
-                            drawtext=text='BY THE':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w-text_w)/2:y=(h*0.55):fontsize=(w*0.025):$rateTextBorder, \
-                            drawtext=text='CLASSIFICATION AND RATING ADMINISTRATION':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w-text_w)/2:y=(h*0.60):fontsize=(w*0.025):$rateTextBorder, \
-                            drawtext=text='MOTION PICTURE ASSOCIATION OF AMERICA':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w-text_w)/2:y=(h*0.85):fontsize=(w*0.012):$rateTextBorder, \
+                            drawtext=text='BY SOME':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w-text_w)/2:y=(h*0.55):fontsize=(w*0.025):$rateTextBorder, \
+                            drawtext=text='MOTION FILM CLASSIFICATION SYSTEM ON EARTH':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w-text_w)/2:y=(h*0.60):fontsize=(w*0.025):$rateTextBorder, \
                             drawtext=text='www.popcornratings.corn':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w*0.07):y=(h*0.907):fontsize=(w*0.015):$rateTextBorder, \
                             drawtext=text='www.freefamily.films':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w*0.76):y=(h*0.907):fontsize=(w*0.015):$rateTextBorder, \
-                            drawtext=text='®':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w*0.83):y=(h*0.45):fontsize=(w*0.035):$rateTextBorder,fade=t=in:st=0:d=0.2" \
+                            drawtext=text='®':fontcolor=f2f2f2@0.9:fontfile='$rateScreenFontName':x=(w*0.83):y=(h*0.45):fontsize=(w*0.035):$rateTextBorder" \
           "$_temp/_tempRating.mp4" -y -loglevel error
     rm -f "$_temp/_tempClips.txt"
     echo "file '_tempRating.mp4'" >> "$_temp/_tempClips.txt"
 
-    ffmpeg -f lavfi -i color=c=$color1@1:duration=$CLIP_DURATIONSECS:s=$ffprobe_width"x"$ffprobe_height:r=$ffprobe_frame_rate -i "${f%.*}/Clearlogo.png" -f lavfi -t $CLIP_DURATIONSECS -i anullsrc \
-           -filter_complex "[1:v]scale=620:404[clearlogo],\
-                            [0:v][clearlogo]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2-60,\
+    LOGOCLIP_DURATIONSECS="7.0"  #MIN 4.0
+    ffmpeg -f lavfi -i color=c=$color1@1:duration=$LOGOCLIP_DURATIONSECS:s=$ffprobe_width"x"$ffprobe_height:r=$ffprobe_frame_rate -i "${f%.*}/Clearlogo.png" -f lavfi -t $LOGOCLIP_DURATIONSECS -i anullsrc \
+           -filter_complex "[1:v]scale=(iw*4):-1[clearlogo],\
+                            [0:v][clearlogo]overlay=x='if(lte(t,3), 50+(t/3)*100, 200)':y=(main_h-overlay_h)/2-60,\
                             drawbox=x=0:y=(ih-60):w=$ffprobe_width:h=60:color=$color1@1:thickness=fill:enable='between(t,0,$CLIP_DURATIONSECS)', \
-                            drawtext=text='$TEASER ($dynamicRange)':fontcolor='$color3':fontfile='$rateScreenFontName':bordercolor=$color4:borderw=1:x=(w-text_w)/2:y=(h-50):fontsize=30" \
+                            drawtext=text='$TEASER ($dynamicRange video quality)':fontcolor='$color3':fontfile='$rateScreenFontName':bordercolor=$color4:borderw=1:x=(w-text_w)/2:y=(h-50):fontsize=30, \
+                            fade=type=out:duration=3.0:start_time=2.0" \
           "$_temp/_tempLogo.mp4" -y -loglevel error
-    echo "file '_tempLogo.mp4'" >> "$_temp/_tempClips.txt"
   
     for ((n=1; n<=$MAX_TRAILER_CLIPS; n++)); do
       ProcedureEchoFeedback "TRAILERS" $n $MAX_TRAILER_CLIPS
-      ffmpeg_ssAt=$(echo "scale=2;($ffprobe_duration/$MAX_TRAILER_CLIPS*$n)-($CLIP_SPANSECS - 1.00)" | bc);  #formula to calculate where the $MAX_TRAILER_CLIPS clips starts within the total length of video (w/1 second pad)
-      ffmpeg_ssTo=$(echo "scale=2;($ffmpeg_ssAt + $CLIP_SPANSECS)" | bc);  
-      if [ $(echo "scale=2;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi	#Add a zero, in case the first(s) clip start less than 1 second.
-      if [ $(echo "scale=2;$ffmpeg_ssTo < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssTo='0'$ffmpeg_ssTo; fi
+      ffmpeg_ssAt=$(echo "scale=1;($ffprobe_duration/$MAX_TRAILER_CLIPS*$n)-($CLIP_SPANSECS - 1.00)" | bc);  #formula to calculate where the $MAX_TRAILER_CLIPS clips starts within the total length of video (w/1 second pad)
+      ffmpeg_ssTo=$(echo "scale=1;($ffmpeg_ssAt + $CLIP_SPANSECS)" | bc);  
+      if [ $(echo "scale=1;$ffmpeg_ssAt < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssAt='0'$ffmpeg_ssAt; fi	#Add a zero, in case the first(s) clip start less than 1 second.
+      if [ $(echo "scale=1;$ffmpeg_ssTo < 1.00" | bc ) -eq 1 ]; then ffmpeg_ssTo='0'$ffmpeg_ssTo; fi
+      logger+=("  n=$n, ffmpeg_ssAt=$ffmpeg_ssAt, ffmpeg_ssTo=$ffmpeg_ssTo")
 
       ffmpeg -i "${ffmpeg_i[@]}" -ss $ffmpeg_ssAt -to $ffmpeg_ssTo -c copy "$_temp/_tempClip$n.mp4" -y -loglevel error  #Creates small clip lasting $CLIP_SPANSECS.       
       if [ $n -lt $MAX_TRAILER_CLIPS ]; then #clipTail zoomed-in
@@ -787,13 +793,16 @@ for f in "$1"/*; do
       echo "file '_tempClipTail$n.mp4'" >> "$_temp/_tempClips.txt"
     done
     echo "file '_tempLogo.mp4'" >> "$_temp/_tempClips.txt"
-    ProcedureEchoFeedback 'TRAILER' "Merging ${YELLOW}$n${NC} clips"
-    ffmpeg -f concat -safe 0 -i "$_temp/_tempClips.txt" -c copy "$_temp/_temptrailer_nobackmusic.mp4" -y -loglevel error
+    ProcedureEchoFeedback 'TRAILER' "Merging ${YELLOW}$(echo "$n*2" | bc )${NC} individual clips take processing power.  Be patient, be patient..."
+ 
+    trailer_bit_rate=$(echo "$ffprobe_bit_rate_kbps*1000/8" | bc)    #lower the trailer bitrate in ~1/8th. 
+    ffmpeg -f concat -safe 0 -i "$_temp/_tempClips.txt" -c:v libx264 -crf 30 -b:v $trailer_bit_rate "$_temp/_temptrailer_nobackmusic.mp4" -y -loglevel error
+    logger+=("  trailer_bit_rate--> $trailer_bit_rate  ($ffprobe_bit_rate_kbps*1000/8)")
 
     ProcedureEchoFeedback 'TRAILER' 'Finalizing trailer may take a while...'
-    delayms=$(echo "$CLIP_DURATIONSECS*1000 + 1000" | bc)
+    delayms=$(echo "$CLIP_DURATIONSECS*100 + 100" | bc)
     ffmpeg -i "$_temp/_temptrailer_nobackmusic.mp4" -i "AccentMelody$melodyIndex.mp3" \
-           -filter_complex "[1:a] adelay=$delayms|$delayms,volume=0.15,apad[music]; \
+           -filter_complex "[1:a] adelay=$delayms|$delayms,volume=0.05,apad[music]; \
                             [0:a][music]amerge[out]" \
            -c:v copy -map 0:v -map "[out]" \
            "${f%.*}/${base_name[@]}-trailer.mp4" -y -loglevel panic
